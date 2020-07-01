@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>iris_sami</name>
+    <version>0.0.0</version>
+    <description>Simple Arm Manipulation Interface</description>
+
+    <author email="efp@ua.pt">Eurico Farinha Pedrosa</author>
+    <maintainer email="efp@ua.pt">Eurico Farinha Pedrosa</maintainer>
+
+    <license>BSD</license>
+
+    <buildtool_depend>catkin</buildtool_depend>
+    <exec_depend>rospy</exec_depend>
+
+    <export>
+    </export>
+</package>
