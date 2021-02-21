@@ -5,6 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  geometry_msgs
   message_generation
 )
 
@@ -16,6 +17,9 @@ add_message_files(
 
 add_service_files(
   FILES
+  Status.srv
+  Velocity.srv
+  NoArguments.srv
   JointGoal.srv
   PoseGoal.srv
   RelativeMove.srv
@@ -24,6 +28,7 @@ add_service_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
+  geometry_msgs
 )
 
 catkin_package()

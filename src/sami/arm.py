@@ -38,7 +38,7 @@ class Arm(object):
         ok = self.arm_interface.move_pose_relative_world(dpose, velocity)
         if not ok:
             rospy.logerr(self.error_msg)
-        return on
+        return ok
 
     def move_chain(self, chain):
         for i, motion in enumerate(chain.mchain):
@@ -64,10 +64,10 @@ class Arm(object):
         return 0
 
     def get_joints(self):
-        self.arm_interface.get_joints()
+        return self.arm_interface.get_joints()
 
     def get_pose(self):
-        self.arm_interface.get_pose()
+        return self.arm_interface.get_pose()
 
     @property
     def velocity(self):

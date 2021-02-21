@@ -121,5 +121,6 @@ class MoveItPlug(ArmIF):
     def get_joints(self):
         return self.moveg.get_current_joint_values()
 
+
     def get_pose(self):
         return self.moveg.get_current_pose().pose
