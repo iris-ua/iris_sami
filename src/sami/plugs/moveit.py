@@ -89,3 +89,37 @@ class MoveItPlug(ArmIF):
             return False
 
         return True
+    
+    def move_pose_relative_world(self, dpose, velocity):
+        if velocity is None:
+            self.moveg.set_max_velocity_scaling_factor(self.velocity)
+        else:
+            self.moveg.set_max_velocity_scaling_factor(velocity)
+
+        pose = pose_to_list(self.moveg.get_current_pose().pose)
+        pose = np.sum(pose, dpose)
+
+        wp = [list_to_pose(pose)]
+        (plan, fraction) = self.moveg.compute_cartesian_path(wp, eef_step = 0.01, jump_threshold = 0.0)
+        if fraction < 1.0:
+            self.last_error_msg = "No motion plan found."
+            return False
+
+        v = self.velocity if velocity is None else velocity
+        plan = self.moveg.retime_trajectory(self.robot.get_current_state(), plan, v)
+
+        try:
+            self.moveg.execute(plan, wait=True)
+            self.moveg.stop()
+        except MoveItCommanderException as e:
+            self.last_error_msg = str(e)
+            return False
+
+        return True
+
+    
+    def get_joints(self):
+        return self.moveg.get_current_joint_values()
+
+    def get_pose(self):
+        return self.moveg.get_current_pose().pose

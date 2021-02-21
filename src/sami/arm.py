@@ -5,7 +5,7 @@ from sami.factory import ArmIFFactory
 
 
 def EzPose(x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0):
-    return [x, y, y, roll, pitch, yaw]
+    return [x, y, z, roll, pitch, yaw]
 
 
 class Arm(object):
@@ -32,6 +32,13 @@ class Arm(object):
         if not ok:
             rospy.logerr(self.error_msg)
         return ok
+    
+    def move_pose_relative_world(self, dpose, velocity = None):
+        """ Move the arm relative to the world base frame in a straight trajectory """
+        ok = self.arm_interface.move_pose_relative_world(dpose, velocity)
+        if not ok:
+            rospy.logerr(self.error_msg)
+        return on
 
     def move_chain(self, chain):
         for i, motion in enumerate(chain.mchain):
@@ -55,6 +62,12 @@ class Arm(object):
 
         chain.clear()
         return 0
+
+    def get_joints(self):
+        self.arm_interface.get_joints()
+
+    def get_pose(self):
+        self.arm_interface.get_pose()
 
     @property
     def velocity(self):
