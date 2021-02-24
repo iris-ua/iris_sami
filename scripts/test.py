@@ -3,20 +3,28 @@
 import math
 import rospy
 
+import socket, time
+
 from sami.arm import Arm, EzPose, ArmMotionChain
 from sami.gripper import Gripper
 
 def main():
     rospy.init_node('motion_planner', anonymous=True)
 
-    arm = Arm('ur10e', group='manipulator')
+    HOST = "10.1.0.2"    
+    SCRIPT_PORT = 30002          
+
+    arm = Arm('ur10e_urscript', host=HOST, port=SCRIPT_PORT)
+
+    # arm = Arm('ur10e_moveit', group='manipulator')
     arm.velocity = 0.2
 
-    # gripper = Gripper('cr200-85', host='10.1.0.2', port=44221)
+    print(arm)
+    # # gripper = Gripper('cr200-85', host='10.1.0.2', port=44221)
 
-    x = -0.6
-    y = -0.176
-    arm.move_pose(pose=[x, y, 0.6, 0, 0.5, math.pi + math.pi/6])
+    # x = -0.6
+    # y = -0.176
+    # arm.move_pose(pose=[x, y, 0.6, 0, 0.5, math.pi + math.pi/6])
     # arm.move_pose(pose=[x, y, 0.5, 0, math.pi*0.5, math.atan2(y,x)])
     # print math.atan2(y,x)
 
