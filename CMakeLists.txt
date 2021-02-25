@@ -11,9 +11,9 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_python_setup()
 
-add_message_files(
-  FILES
-)
+#add_message_files(
+#  FILES
+#)
 
 add_service_files(
   FILES
@@ -21,6 +21,9 @@ add_service_files(
   Velocity.srv
   NoArguments.srv
   JointGoal.srv
+  JointGoalName.srv
+  LoadJointGoalName.srv
+  SaveJointGoalName.srv
   PoseGoal.srv
   RelativeMove.srv
 )

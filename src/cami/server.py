@@ -5,7 +5,7 @@ import math
 
 from sami.arm import Arm
 from sami.gripper import Gripper
-from iris_sami.srv import Status, Velocity, JointGoal, JointGoalName, PoseGoal, RelativeMove, NoArguments
+from iris_sami.srv import Status, Velocity, JointGoal, JointGoalName,SaveJointGoalName, LoadJointGoalName, PoseGoal, RelativeMove, NoArguments
 
 arm = None
 gripper = None
@@ -38,6 +38,21 @@ def move_joint_name_srv(req):
 
     ok = arm.move_joints(joint_position_name=joint_name)
 
+    if not ok:
+        return [False, arm.error_msg]
+    return [True, 'Success']
+
+def save_joint_name_srv(req):
+    position = req.position_name
+    ok = arm.save_joint_position(position)
+    if not ok:
+        return [False, arm.error_msg]
+    return [True, 'Success']
+
+def load_joint_name_srv(req):
+    
+    filename = req.joint_positions_file
+    ok = arm.load_joint_position_file(filename)
     if not ok:
         return [False, arm.error_msg]
     return [True, 'Success']
@@ -80,6 +95,8 @@ def main():
     rospy.Service('/iris_sami/velocity', Velocity, velocity_srv)
     rospy.Service('/iris_sami/joints', JointGoal, move_joint_srv)
     rospy.Service('/iris_sami/joints_name', JointGoalName, move_joint_name_srv)
+    rospy.Service('/iris_sami/save_joints_name', SaveJointGoalName, save_joint_name_srv)
+    rospy.Service('/iris_sami/load_joints_name', LoadJointGoalName, load_joint_name_srv)
     rospy.Service('/iris_sami/pose', PoseGoal, move_pose_srv)
     rospy.Service('/iris_sami/move', RelativeMove, move_pose_relative_srv)
     rospy.Service('/iris_sami/grip', NoArguments, grip_srv)
