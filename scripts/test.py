@@ -28,7 +28,7 @@ def main():
     print(arm.joint_positions)
     print(arm.get_joint_position_names())
     print(arm.get_joints())   
-    arm.move_joints(joint_position_name="new_position2")
+    arm.move_joints(joint_position_name="new_positio")
 
     # # gripper = Gripper('cr200-85', host='10.1.0.2', port=44221)
 

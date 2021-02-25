@@ -29,12 +29,14 @@ class Arm(object):
         try:
             joints = self.joint_positions[joint_position_name]
         except KeyError:
-            rospy.logerr("Joint position name not found. Please provide an existing position name or a <joints> parameter input.")
-            return 
+            self.error_msg = "Joint position name not found. Available positions: " + repr(list(self.joint_positions.keys())) 
+            rospy.logerr(self.error_msg)
+            return False
         
         if joints is None:
-            rospy.logerr("No joint configuration was provided.")
-            return
+            self.error_msg = "No joint configuration was provided."
+            rospy.logerr(self.error_msg)
+            return False
 
         ok = self.arm_interface.move_joints(joints, velocity)
         if not ok:
@@ -101,8 +103,9 @@ class Arm(object):
         if filename is None:
             filename = self.positions_file
             if filename is None:
-                rospy.logerr("No filename provided as input. No filename available in the arm context.")
-                return 
+                self.error_msg = "No filename provided as input. No filename available in the arm context."
+                rospy.logerr(self.error_msg)
+                return False
         
         try:
             data = rosparam.load_file(filename)
@@ -112,10 +115,9 @@ class Arm(object):
                 filename = rospkg.RosPack().get_path('iris_sami') + '/yaml/' + filename
                 data = rosparam.load_file(filename)
             except Exception as e:
-
-                rospy.logerr("Can't load positions from'" + filename + "'")
-                rospy.logerr(e)
-                return
+                self.error_msg = "Can't load positions from'" + filename + "'\n" + e  
+                rospy.logerr(self.error_msg)
+                return False
 
         self.joint_positions = data[0][0]
         self.positions_file = filename
@@ -130,8 +132,9 @@ class Arm(object):
         if filename is None:
             filename = self.positions_file
             if filename is None:
-                rospy.logerr("No filename provided as input. No filename available in the arm context.")
-                return
+                self.error_msg = "No filename provided as input. No filename available in the arm context."
+                rospy.logerr(self.error_msg)
+                return False
 
         try:
             hs = open(filename, "a+")
@@ -140,10 +143,11 @@ class Arm(object):
 
             self.joint_positions.update({position_name: self.get_joints()})
         except Exception as e:
-            rospy.logerr("Can't save position '" + position_name + "' to '" + filename + "'")
-            rospy.logerr(e)
-            return 
+            self.error_msg = "Can't save position '" + position_name + "' to '" + filename + "'\n" + e
+            rospy.logerr(self.error_msg)
+            return False
         rospy.loginfo("Successfully saved position '" + position_name + "' to '" + filename + "'")
+        return True
 
     @property
     def velocity(self):
@@ -156,6 +160,10 @@ class Arm(object):
     @property
     def error_msg(self):
         return self.arm_interface.last_error_msg
+
+    @error_msg.setter
+    def error_msg(self, value):
+        self.arm_interface.last_error_msg = value
 
 class ArmMotionChain(object):
     def __init__(self):
