@@ -24,6 +24,7 @@ add_service_files(
   JointGoalName.srv
   LoadJointGoalName.srv
   SaveJointGoalName.srv
+  Actionlist.srv
   PoseGoal.srv
   RelativeMove.srv
 )

@@ -6,7 +6,7 @@ import rospkg
 
 import socket, time
 
-from sami.arm import Arm, EzPose, ArmMotionChain
+from sami.arm import Arm, EzPose, ArmMotionChain, ActionlistParser
 from sami.gripper import Gripper
 
 def main():
@@ -18,17 +18,18 @@ def main():
 
     # arm = Arm('ur10e_urscript', host=HOST, port=SCRIPT_PORT)
 
-    arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="positions.yaml")
+    ActionlistParser.parse("actionlist_example.csv")
+    # arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="positions.yaml")
     # arm = Arm('ur10e_moveit', group='manipulator')
-    arm.velocity = 0.2
+    # arm.velocity = 0.2
     # arm.save_joint_position("new_position", BASE_DIR + "/yaml/positions.yaml")
 
     # arm.load_joint_position_file(BASE_DIR + "/yaml/positions.yaml")
     # arm.load_joint_position_file()
-    print(arm.joint_positions)
-    print(arm.get_joint_position_names())
-    print(arm.get_joints())   
-    arm.move_joints(joint_position_name="new_positio")
+    # print(arm.joint_positions)
+    # print(arm.get_joint_position_names())
+    # print(arm.get_joints())   
+    # arm.move_joints(joint_position_name="new_positio")
 
     # # gripper = Gripper('cr200-85', host='10.1.0.2', port=44221)
 

@@ -5,7 +5,7 @@ import math
 
 from sami.arm import Arm
 from sami.gripper import Gripper
-from iris_sami.srv import Status, Velocity, JointGoal, JointGoalName,SaveJointGoalName, LoadJointGoalName, PoseGoal, RelativeMove, NoArguments
+from iris_sami.srv import Status, Velocity, JointGoal, JointGoalName, SaveJointGoalName, Actionlist, LoadJointGoalName, PoseGoal, RelativeMove, NoArguments
 
 arm = None
 gripper = None
@@ -57,6 +57,15 @@ def load_joint_name_srv(req):
         return [False, arm.error_msg]
     return [True, 'Success']
 
+def actionlist_srv(req):
+
+    filename = req.actionlist_filename
+    ok = arm.execute_actionlist(filename)
+    if not ok:
+        return [False, arm.error_msg]
+    return [True, 'Success']
+
+
 
 def move_pose_srv(req):
     pose = [req.x, req.y, req.z, req.roll, req.pitch, req.yaw]
@@ -97,6 +106,7 @@ def main():
     rospy.Service('/iris_sami/joints_name', JointGoalName, move_joint_name_srv)
     rospy.Service('/iris_sami/save_joints_name', SaveJointGoalName, save_joint_name_srv)
     rospy.Service('/iris_sami/load_joints_name', LoadJointGoalName, load_joint_name_srv)
+    rospy.Service('/iris_sami/actionlist', Actionlist, actionlist_srv)
     rospy.Service('/iris_sami/pose', PoseGoal, move_pose_srv)
     rospy.Service('/iris_sami/move', RelativeMove, move_pose_relative_srv)
     rospy.Service('/iris_sami/grip', NoArguments, grip_srv)
