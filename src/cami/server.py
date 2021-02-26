@@ -12,6 +12,7 @@ gripper = None
 
 
 def info_srv(req):
+    rospy.loginfo('Status service called')
     feedback = 'Robot is operational'
     joints = arm.get_joints()
     pose = arm.get_pose()
@@ -20,13 +21,15 @@ def info_srv(req):
 
 
 def velocity_srv(req):
+    rospy.loginfo('Velocity service called with value ' + str(req.velocity))
     arm.velocity = req.velocity
     if arm.velocity != req.velocity:
         return [False, 'An error has occured']
-    return [True, 'Success']
+    return [True, 'Velocity set to ' + str(req.velocity)]
 
 
 def move_joint_srv(req):
+    rospy.loginfo('Joint Goal service called with values\n' + str(req))
     joints = [req.shoulder_pan, req.shoulder_lift, req.elbow, req.wrist_1, req.wrist_2, req.wrist_3]
     ok = arm.move_joints(joints)
     if not ok:
@@ -84,17 +87,19 @@ def move_pose_relative_srv(req):
 
 
 def grip_srv(req):
+    rospy.loginfo('Grip service called')
     result = gripper.grip()
     if result:
         return [False, 'An error has ocurred']
-    return [True, 'Success']
+    return [True, 'Gripper is Closed']
 
 
 def release_srv(req):
+    rospy.loginfo('Release service called')
     result = gripper.release()
     if result:
         return [False, 'An error has ocurred']
-    return [True, 'Success']
+    return [True, 'Gripper is Opened']
 
 
 def main():

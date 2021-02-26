@@ -1,0 +1,33 @@
+<root main_tree_to_execute = "UR10e" >
+    <BehaviorTree ID="UR10e">
+        <Sequence name="UR10e Benchmark">
+            <UR10eOnline    name="Is robot Online?"/>
+            <Velocity       name="Set Velocity" velocity="0.3" />
+            <Grip           name="Close the Gripper"/>
+            <Release        name="Open the Gripper"/>
+            <Joints         name="Set Joints to Given Position"
+                            shoulder_pan="0"
+                            shoulder_lift="-1.57"
+                            elbow="0"
+                            wrist_1="0"
+                            wrist_2="0"
+                            wrist_3="0"/>
+            <Pose           name="Mose Arm to Given Pose"
+                            x="0.5"
+                            y="0.5"
+                            z="0.5"
+                            roll="0"
+                            pitch="0.78"
+                            yaw="0.78"/>
+            
+            <Move           name="Mose Arm to Given Pose"
+                            x="0.1"
+                            y="0.0"
+                            z="0.0"
+                            roll="0"
+                            pitch="0"
+                            yaw="0"/>
+                            
+        </Sequence>
+    </BehaviorTree>
+ </root>
