@@ -64,36 +64,76 @@ class ActionlistParser():
 
 
 
+class JointPositionAliases():
+
+    def __init__(self, filename):
+
+        self.positions_file = filename
+        self.joint_positions = self.load_joint_position_file(self.positions_file)
+        if not self.joint_positions:
+            raise Exception
+
+        self.error_msg = ""
+    
+    def get_joint_configuration(self, position_name):
+        
+        try:
+            return self.joint_positions[position_name]
+        except KeyError:
+            raise KeyError
+
+
+
+    def load_joint_position_file(self, filename):
+        '''Returns the dict with the positions previously saved in a yaml file'''
+        
+        try:
+            data = rosparam.load_file(filename)
+        except rosparam.RosParamException:
+            # If not found, check again in the current package
+            try:
+                filename = rospkg.RosPack().get_path('iris_sami') + '/yaml/' + filename
+                data = rosparam.load_file(filename)
+            except Exception as e:
+                self.error_msg = "Can't load positions from'" + filename + "'\n" + str(e)  
+                rospy.logerr(self.error_msg)
+                return False
+
+        self.joint_positions = data[0][0]
+        self.positions_file = filename
+
+        return data[0][0]
+
+
+    def save_joint_position(self, position_name, joint_configuration):
+        ''' Saves current joint configuration to <filename> with name <position_name>. If the provided file doesn't
+            exist, it creates it '''
+
+        try:
+            hs = open(self.positions_file, "a+")
+            hs.write("\n" + position_name + " : " + str(joint_configuration))
+            hs.close()
+
+            self.joint_positions.update({position_name: joint_configuration})
+        except Exception as e:
+            self.error_msg = "Can't save position '" + position_name + "' to '" + self.positions_file + "'\n" + str(e)
+            rospy.logerr(self.error_msg)
+            return False
+        rospy.loginfo("Successfully saved position '" + position_name + "' to '" + self.positions_file + "'")
+        return True
 
 
 class Arm(object):
     def __init__(self, name, **options):
         self.arm_interface = ArmIFFactory.arm_with_name(name, options)
 
-        ''' Positions filename can be passed through the options argument fields. If this is done, then all functions regarding
-            saving or loading joint position reference names use this variable instead if the function parameter is not provided'''
-        
         try:
-            self.positions_file = options["joint_positions_filename"] 
-            self.joint_positions = self.load_joint_position_file()
+            self.joint_pos_aliases = JointPositionAliases(options["joint_positions_filename"])
         except Exception:
-            self.positions_file = None
-            self.joint_positions = {}
+            self.joint_pos_aliases = None
 
-    def move_joints(self, joints=None, velocity = None, joint_position_name=None):
+    def move_joints(self, joints=None, velocity = None):
         """ Move the arm to specified joints. """
-
-        try:
-            joints = self.joint_positions[joint_position_name]
-        except KeyError:
-            self.error_msg = "Joint position name not found. Available positions: " + repr(list(self.joint_positions.keys())) 
-            rospy.logerr(self.error_msg)
-            return False
-        
-        if joints is None:
-            self.error_msg = "No joint configuration was provided."
-            rospy.logerr(self.error_msg)
-            return False
 
         ok = self.arm_interface.move_joints(joints, velocity)
         if not ok:
@@ -150,6 +190,43 @@ class Arm(object):
         chain.clear()
         return 0
 
+    def load_joint_position_aliases(self, filename):
+        ok = self.joint_pos_aliases = JointPositionAliases(filename)
+        if not ok:
+            self.error_msg = self.joint_pos_aliases.error_msg
+            return ok
+        return True
+
+    def save_joint_position_alias(self, position_name):
+        
+        if self.joint_pos_aliases is None:
+            self.error_msg = "No joint position file provided when creating the arm. Try calling the load joint aliases service."
+            return False
+
+        ok = self.joint_pos_aliases.save_joint_position(position_name, self.get_joints())
+        if not ok:
+            self.error_msg = self.joint_pos_aliases.error_msg
+            return ok
+        return True
+
+    def move_joints_alias(self, position_name):
+
+        if self.joint_pos_aliases is None:
+            self.error_msg = "No joint position file provided when creating the arm. Try calling the load joint aliases service."
+            return False
+
+        try:
+            joints = self.joint_pos_aliases.get_joint_configuration(position_name)
+        except KeyError:
+            self.error_msg = "Alias not found. Existing positions are: " + self.get_joint_position_names()
+            return False
+
+        
+        self.move_joints(joints)
+
+
+        return True
+
     def get_joints(self):
         return self.arm_interface.get_joints()
 
@@ -159,60 +236,7 @@ class Arm(object):
     def get_joint_position_names(self):
         return self.joint_positions.keys()
 
-    def load_joint_position_file(self, filename=None):
-        '''Returns tuple with keys of all possible positions and the dict with the positions previously
-       saved in a yaml file'''
-
-        if filename is None:
-            filename = self.positions_file
-            if filename is None:
-                self.error_msg = "No filename provided as input. No filename available in the arm context."
-                rospy.logerr(self.error_msg)
-                return False
-        
-        try:
-            data = rosparam.load_file(filename)
-        except rosparam.RosParamException:
-            # If not found, check again in the current package
-            try:
-                filename = rospkg.RosPack().get_path('iris_sami') + '/yaml/' + filename
-                data = rosparam.load_file(filename)
-            except Exception as e:
-                self.error_msg = "Can't load positions from'" + filename + "'\n" + e  
-                rospy.logerr(self.error_msg)
-                return False
-
-        self.joint_positions = data[0][0]
-        self.positions_file = filename
-
-        return data[0][0]
-
-
-    def save_joint_position(self, position_name, filename=None):
-        ''' Saves current joint configuration to <filename> with name <position_name>. If the provided file doesn't
-            exist, it creates it '''
-
-        if filename is None:
-            filename = self.positions_file
-            if filename is None:
-                self.error_msg = "No filename provided as input. No filename available in the arm context."
-                rospy.logerr(self.error_msg)
-                return False
-
-        try:
-            hs = open(filename, "a+")
-            hs.write("\n" + position_name + " : " + str(self.get_joints()))
-            hs.close()
-
-            self.joint_positions.update({position_name: self.get_joints()})
-        except Exception as e:
-            self.error_msg = "Can't save position '" + position_name + "' to '" + filename + "'\n" + e
-            rospy.logerr(self.error_msg)
-            return False
-        rospy.loginfo("Successfully saved position '" + position_name + "' to '" + filename + "'")
-        return True
-
-
+    
     def execute_actionlist(self, filename):
         try:
             motion_chain = ActionlistParser.parse(filename)

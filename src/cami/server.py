@@ -37,9 +37,9 @@ def move_joint_srv(req):
     return [True, 'Success']
 
 def move_joint_name_srv(req):
-    joint_name = req.joint_position_name
+    pos_name = req.joint_position_name
 
-    ok = arm.move_joints(joint_position_name=joint_name)
+    ok = arm.move_joints_alias(pos_name)
 
     if not ok:
         return [False, arm.error_msg]
@@ -47,7 +47,7 @@ def move_joint_name_srv(req):
 
 def save_joint_name_srv(req):
     position = req.position_name
-    ok = arm.save_joint_position(position)
+    ok = arm.save_joint_position_alias(position)
     if not ok:
         return [False, arm.error_msg]
     return [True, 'Success']
@@ -55,7 +55,7 @@ def save_joint_name_srv(req):
 def load_joint_name_srv(req):
     
     filename = req.joint_positions_file
-    ok = arm.load_joint_position_file(filename)
+    ok = arm.load_joint_position_aliases(filename)
     if not ok:
         return [False, arm.error_msg]
     return [True, 'Success']
@@ -108,9 +108,9 @@ def main():
     rospy.Service('/iris_sami/status', Status, info_srv)
     rospy.Service('/iris_sami/velocity', Velocity, velocity_srv)
     rospy.Service('/iris_sami/joints', JointGoal, move_joint_srv)
-    rospy.Service('/iris_sami/joints_name', JointGoalName, move_joint_name_srv)
-    rospy.Service('/iris_sami/save_joints_name', SaveJointGoalName, save_joint_name_srv)
-    rospy.Service('/iris_sami/load_joints_name', LoadJointGoalName, load_joint_name_srv)
+    rospy.Service('/iris_sami/joints_alias', JointGoalName, move_joint_name_srv)
+    rospy.Service('/iris_sami/save_joints_alias', SaveJointGoalName, save_joint_name_srv)
+    rospy.Service('/iris_sami/load_joints_alias', LoadJointGoalName, load_joint_name_srv)
     rospy.Service('/iris_sami/actionlist', Actionlist, actionlist_srv)
     rospy.Service('/iris_sami/pose', PoseGoal, move_pose_srv)
     rospy.Service('/iris_sami/move', RelativeMove, move_pose_relative_srv)
@@ -118,7 +118,7 @@ def main():
     rospy.Service('/iris_sami/release', NoArguments, release_srv)
 
     global arm, gripper
-    arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="positions.yaml")
+    arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="posiions.yaml")
     arm.velocity = 0.2
 
     gripper = Gripper('cr200-85', host='localhost', port=44221)

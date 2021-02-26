@@ -4,7 +4,7 @@ import copy
 import rospy
 import socket
 
-import urx
+# import urx
 
 import numpy as np
 import tf.transformations as tr
