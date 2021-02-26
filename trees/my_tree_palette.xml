@@ -1,8 +1,0 @@
-<root>
-     <TreeNodesModel>
-        <Condition ID="CheckBattery"/>
-        <Action ID="OpenGripper"/>
-        <Action ID="ApproachObject"/>
-        <Action ID="CloseGripper"/>        
-    </TreeNodesModel>
-</root>

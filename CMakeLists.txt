@@ -11,9 +11,9 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_python_setup()
 
-#add_message_files(
-#  FILES
-#)
+add_message_files(
+ FILES
+)
 
 add_service_files(
   FILES
@@ -35,16 +35,13 @@ generate_messages(
   geometry_msgs
 )
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+catkin_package(CATKIN_DEPENDS message_runtime behaviortree_cpp_v3)
 
 find_package(behaviortree_cpp_v3)
 include_directories(${behaviortree_cpp_v3_INCLUDE_DIRS})
-
-add_executable(behavior_tree src/bt/tree.cpp)
-target_link_libraries(behavior_tree ${behaviortree_cpp_v3_LIBRARIES})
+include_directories(${catkin_INCLUDE_DIRS})
 
 add_executable(ur10e_tree src/bt/ur10e.cpp)
-target_link_libraries(ur10e_tree ${behaviortree_cpp_v3_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(ur10e_tree ${catkin_LIBRARIES} ${behaviortree_cpp_v3_LIBRARIES})
 
-catkin_package()
+add_dependencies(ur10e_tree iris_sami_generate_messages_cpp)
