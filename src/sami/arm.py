@@ -179,7 +179,7 @@ class Arm(object):
                 ret = True
             elif 'n' in motion["type"]:
                 rospy.loginfo("MoveJointsName: {}".format(motion['goal']))
-                ret = self.move_joints(motion['velocity'], joint_position_name=motion['goal'])
+                ret = self.move_joints_alias(motion['goal'])
 
 
             if ret == False:
@@ -218,7 +218,7 @@ class Arm(object):
         try:
             joints = self.joint_pos_aliases.get_joint_configuration(position_name)
         except KeyError:
-            self.error_msg = "Alias not found. Existing positions are: " + self.get_joint_position_names()
+            self.error_msg = "Alias not found. Existing positions are: " + str(self.get_joint_position_names())
             return False
 
         
@@ -234,7 +234,7 @@ class Arm(object):
         return self.arm_interface.get_pose()
 
     def get_joint_position_names(self):
-        return self.joint_positions.keys()
+        return self.joint_pos_aliases.joint_positions.keys()
 
     
     def execute_actionlist(self, filename):

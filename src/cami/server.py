@@ -118,7 +118,7 @@ def main():
     rospy.Service('/iris_sami/release', NoArguments, release_srv)
 
     global arm, gripper
-    arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="posiions.yaml")
+    arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="positions.yaml")
     arm.velocity = 0.2
 
     gripper = Gripper('cr200-85', host='localhost', port=44221)
