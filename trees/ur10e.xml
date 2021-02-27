@@ -19,15 +19,15 @@
                             roll="0"
                             pitch="0.78"
                             yaw="0.78"/>
-            
-            <Move           name="Mose Arm to Given Pose"
+            <Move           name="Mose Arm in given coordinates"
                             x="0.1"
                             y="0.0"
                             z="0.0"
                             roll="0"
                             pitch="0"
                             yaw="0"/>
-                            
+            <JointsAlias    name="Move arm to saved Position"
+                            alias="grabbing_pos"/>
         </Sequence>
     </BehaviorTree>
  </root>

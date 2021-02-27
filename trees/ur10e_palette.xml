@@ -4,7 +4,7 @@
 
         <Action ID="Velocity">
             <input_port name="velocity" type="float"/>
-        </Action>/>
+        </Action>
 
         <Action ID="Grip"/>
         <Action ID="Release"/>
@@ -16,7 +16,11 @@
             <input_port name="wrist_1"          type="float"/>
             <input_port name="wrist_2"          type="float"/>
             <input_port name="wrist_3"          type="float"/>
-        </Action>/>
+        </Action>
+
+        <Action ID="JointsAlias">
+            <input_port name="alias"    type="std:string"/>
+        </Action>
 
         <Action ID="Pose">
             <input_port name="x"        type="float"/>
@@ -25,7 +29,7 @@
             <input_port name="roll"     type="float"/>
             <input_port name="pitch"    type="float"/>
             <input_port name="yaw"      type="float"/>
-        </Action>/>
+        </Action>
         
         <Action ID="Move">
             <input_port name="x"        type="float"/>
@@ -34,8 +38,6 @@
             <input_port name="roll"     type="float"/>
             <input_port name="pitch"    type="float"/>
             <input_port name="yaw"      type="float"/>
-        </Action>/>
-
-
+        </Action>
     </TreeNodesModel>
 </root>

@@ -3,6 +3,7 @@
 #include "iris_sami/Velocity.h"
 #include "iris_sami/NoArguments.h"
 #include "iris_sami/JointGoal.h"
+#include "iris_sami/JointGoalName.h"
 #include "iris_sami/PoseGoal.h"
 #include "iris_sami/RelativeMove.h"
 
@@ -71,6 +72,7 @@ namespace UR10e
         iris_sami::NoArguments srv;
         if (client.call(srv))
         {
+            sleep(1);
             std::cout << srv.response.feedback << std::endl;
             return BT::NodeStatus::SUCCESS;
         }
@@ -142,6 +144,40 @@ namespace UR10e
             else
             {
                 std::cout << "Failed to call service iris_sami/joints" << std::endl;
+                return BT::NodeStatus::FAILURE;
+            }
+        }
+    };
+
+    class JointsAlias : public BT::SyncActionNode
+    {
+    public:
+        JointsAlias(const std::string& name, const BT::NodeConfiguration& config) 
+        : SyncActionNode(name, config){ }
+
+        static BT::PortsList providedPorts()
+        {
+            return { BT::InputPort<std::string>("alias") };
+        }
+
+        BT::NodeStatus tick() override
+        {
+            BT::Optional<std::string> alias = getInput<std::string>("alias");
+
+            ros::NodeHandle n;
+            ros::ServiceClient client = n.serviceClient<iris_sami::JointGoalName>("iris_sami/joints_alias");
+            iris_sami::JointGoalName srv;
+
+            srv.request.joint_position_name = alias.value();
+            
+            if (client.call(srv))
+            {
+                std::cout << srv.response.feedback << std::endl;
+                return BT::NodeStatus::SUCCESS;
+            }
+            else
+            {
+                std::cout << "Failed to call service iris_sami/joints_alias" << std::endl;
                 return BT::NodeStatus::FAILURE;
             }
         }

@@ -23,11 +23,12 @@ int main(int argc, char** argv)
 
     factory.registerNodeType<Velocity>("Velocity");
     factory.registerNodeType<Joints>("Joints");
+    factory.registerNodeType<JointsAlias>("JointsAlias");
     factory.registerNodeType<Pose>("Pose");
     factory.registerNodeType<Move>("Move");
 
     std::string tree_path = ros::package::getPath("iris_sami") + "/trees/";
-    auto tree = factory.createTreeFromFile(tree_path + "ur10e.xml");
+    auto tree = factory.createTreeFromFile(tree_path + argv[1]);
 
     BT::PublisherZMQ publisher_zmq(tree);
 

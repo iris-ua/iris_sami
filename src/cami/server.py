@@ -36,6 +36,7 @@ def move_joint_srv(req):
         return [False, arm.error_msg]
     return [True, 'Success']
 
+
 def move_joint_name_srv(req):
     pos_name = req.joint_position_name
 
@@ -45,6 +46,7 @@ def move_joint_name_srv(req):
         return [False, arm.error_msg]
     return [True, 'Success']
 
+
 def save_joint_name_srv(req):
     position = req.position_name
     ok = arm.save_joint_position_alias(position)
@@ -52,22 +54,21 @@ def save_joint_name_srv(req):
         return [False, arm.error_msg]
     return [True, 'Success']
 
+
 def load_joint_name_srv(req):
-    
     filename = req.joint_positions_file
     ok = arm.load_joint_position_aliases(filename)
     if not ok:
         return [False, arm.error_msg]
     return [True, 'Success']
 
-def actionlist_srv(req):
 
+def actionlist_srv(req):
     filename = req.actionlist_filename
     ok = arm.execute_actionlist(filename)
     if not ok:
         return [False, arm.error_msg]
     return [True, 'Success']
-
 
 
 def move_pose_srv(req):
@@ -122,6 +123,10 @@ def main():
     arm.velocity = 0.2
 
     gripper = Gripper('cr200-85', host='localhost', port=44221)
+    gripper.grip()
+    gripper.release()
+
+    print('Server is ready to take commands')
 
     rospy.spin()
 
