@@ -1,4 +1,6 @@
 #include <ros/ros.h>
+#include <ros/topic.h>
+#include <std_msgs/String.h>
 #include "iris_sami/Status.h"
 #include "iris_sami/Velocity.h"
 #include "iris_sami/NoArguments.h"
@@ -29,11 +31,43 @@ namespace UR10e
         }
     }
 
-    class Velocity : public BT::SyncActionNode
+    BT::NodeStatus Pause()
+    {
+        ros::NodeHandle n;
+        boost::shared_ptr<const std_msgs::String> proceed = ros::topic::waitForMessage<std_msgs::String>("/iris_sami/continue", n);
+        std::cout << proceed->data.c_str() << std::endl;
+        return BT::NodeStatus::SUCCESS;
+    }
+
+    class Sleep : public BT::AsyncActionNode
+    {
+    public:
+        Sleep(const std::string& name, const BT::NodeConfiguration& config) 
+        : AsyncActionNode(name, config){ }
+
+        static BT::PortsList providedPorts()
+        {
+            return { BT::InputPort<float>("seconds") };
+        }
+
+        BT::NodeStatus tick() override
+        {
+            BT::Optional<float> seconds = getInput<float>("seconds");
+            if (!seconds)
+            {
+                throw BT::RuntimeError("missing required input [seconds]: ", seconds.error() );
+            }
+
+            sleep(seconds.value());
+            return BT::NodeStatus::SUCCESS;
+        }
+    };
+
+    class Velocity : public BT::AsyncActionNode
     {
     public:
         Velocity(const std::string& name, const BT::NodeConfiguration& config) 
-        : SyncActionNode(name, config){ }
+        : AsyncActionNode(name, config){ }
 
         static BT::PortsList providedPorts()
         {
@@ -72,7 +106,6 @@ namespace UR10e
         iris_sami::NoArguments srv;
         if (client.call(srv))
         {
-            sleep(1);
             std::cout << srv.response.feedback << std::endl;
             return BT::NodeStatus::SUCCESS;
         }
@@ -100,11 +133,11 @@ namespace UR10e
         }
     }
 
-    class Joints : public BT::SyncActionNode
+    class Joints : public BT::AsyncActionNode
     {
     public:
         Joints(const std::string& name, const BT::NodeConfiguration& config) 
-        : SyncActionNode(name, config){ }
+        : AsyncActionNode(name, config){ }
 
         static BT::PortsList providedPorts()
         {
@@ -149,11 +182,11 @@ namespace UR10e
         }
     };
 
-    class JointsAlias : public BT::SyncActionNode
+    class JointsAlias : public BT::AsyncActionNode
     {
     public:
         JointsAlias(const std::string& name, const BT::NodeConfiguration& config) 
-        : SyncActionNode(name, config){ }
+        : AsyncActionNode(name, config){ }
 
         static BT::PortsList providedPorts()
         {
@@ -183,11 +216,11 @@ namespace UR10e
         }
     };
 
-    class Pose : public BT::SyncActionNode
+    class Pose : public BT::AsyncActionNode
     {
     public:
         Pose(const std::string& name, const BT::NodeConfiguration& config) 
-        : SyncActionNode(name, config){ }
+        : AsyncActionNode(name, config){ }
 
         static BT::PortsList providedPorts()
         {
@@ -232,11 +265,11 @@ namespace UR10e
         }
     };
 
-    class Move : public BT::SyncActionNode
+    class Move : public BT::AsyncActionNode
     {
     public:
         Move(const std::string& name, const BT::NodeConfiguration& config) 
-        : SyncActionNode(name, config){ }
+        : AsyncActionNode(name, config){ }
 
         static BT::PortsList providedPorts()
         {

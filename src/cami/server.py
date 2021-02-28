@@ -13,11 +13,10 @@ gripper = None
 
 def info_srv(req):
     rospy.loginfo('Status service called')
-    feedback = 'Robot is operational'
     joints = arm.get_joints()
     pose = arm.get_pose()
     velocity = arm.velocity
-    return [True, feedback, joints, pose, velocity]
+    return [True, 'Robot is operational', joints, pose, velocity]
 
 
 def velocity_srv(req):
@@ -34,17 +33,15 @@ def move_joint_srv(req):
     ok = arm.move_joints(joints)
     if not ok:
         return [False, arm.error_msg]
-    return [True, 'Success']
+    return [True, 'Moved Robot to ' + str(joints)]
 
 
 def move_joint_name_srv(req):
     pos_name = req.joint_position_name
-
     ok = arm.move_joints_alias(pos_name)
-
     if not ok:
         return [False, arm.error_msg]
-    return [True, 'Success']
+    return [True, 'Moved Robot to \'' + pos_name + '\' pose']
 
 
 def save_joint_name_srv(req):
@@ -52,7 +49,7 @@ def save_joint_name_srv(req):
     ok = arm.save_joint_position_alias(position)
     if not ok:
         return [False, arm.error_msg]
-    return [True, 'Success']
+    return [True, 'Saved current pose as \'' + str(position) + '\'']
 
 
 def load_joint_name_srv(req):
@@ -60,7 +57,7 @@ def load_joint_name_srv(req):
     ok = arm.load_joint_position_aliases(filename)
     if not ok:
         return [False, arm.error_msg]
-    return [True, 'Success']
+    return [True, 'Currently loaded \'' + filename + '\'as positions file']
 
 
 def actionlist_srv(req):
@@ -68,7 +65,7 @@ def actionlist_srv(req):
     ok = arm.execute_actionlist(filename)
     if not ok:
         return [False, arm.error_msg]
-    return [True, 'Success']
+    return [True, 'Successfuly executed \'' + filename + '\' actionlist']
 
 
 def move_pose_srv(req):
@@ -76,7 +73,7 @@ def move_pose_srv(req):
     ok = arm.move_pose(pose)
     if not ok:
         return [False, arm.error_msg]
-    return [True, 'Success']
+    return [True, 'Moced Robot to pose ' + str(pose)]
 
 
 def move_pose_relative_srv(req):
@@ -84,7 +81,7 @@ def move_pose_relative_srv(req):
     ok = arm.move_pose_relative(pose)
     if not ok:
         return [False, arm.error_msg]
-    return [True, 'Success']
+    return [True, 'Moved Robot relatively in ' + str(pose)]
 
 
 def grip_srv(req):
@@ -127,7 +124,6 @@ def main():
     gripper.release()
 
     print('Server is ready to take commands')
-
     rospy.spin()
 
 

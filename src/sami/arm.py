@@ -1,6 +1,7 @@
 
 import rospy, rosparam, rospkg
 import csv, math
+
 from sami.factory import ArmIFFactory
 
 
@@ -8,11 +9,9 @@ def EzPose(x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0):
     return [x, y, z, roll, pitch, yaw]
 
 
-''' Creating a similar static class allows for different file structures.
-    Each parser must take the files content and expose it as a motion chain using Ezposes etc.'''
-
 class ActionlistParser():
-    
+    ''' Creating a similar static class allows for different file structures.
+    Each parser must take the files content and expose it as a motion chain using Ezposes etc.'''
     @staticmethod
     def parse(filename):
         # Load file
@@ -63,11 +62,8 @@ class ActionlistParser():
         return expr
 
 
-
 class JointPositionAliases():
-
     def __init__(self, filename):
-
         self.positions_file = filename
         self.joint_positions = self.load_joint_position_file(self.positions_file)
         if not self.joint_positions:
@@ -76,7 +72,6 @@ class JointPositionAliases():
         self.error_msg = ""
     
     def get_joint_configuration(self, position_name):
-        
         try:
             return self.joint_positions[position_name]
         except KeyError:
@@ -86,7 +81,6 @@ class JointPositionAliases():
 
     def load_joint_position_file(self, filename):
         '''Returns the dict with the positions previously saved in a yaml file'''
-        
         try:
             data = rosparam.load_file(filename)
         except rosparam.RosParamException:
@@ -108,7 +102,6 @@ class JointPositionAliases():
     def save_joint_position(self, position_name, joint_configuration):
         ''' Saves current joint configuration to <filename> with name <position_name>. If the provided file doesn't
             exist, it creates it '''
-
         try:
             hs = open(self.positions_file, "a+")
             hs.write("\n" + position_name + " : " + str(joint_configuration))
@@ -134,7 +127,6 @@ class Arm(object):
 
     def move_joints(self, joints=None, velocity = None):
         """ Move the arm to specified joints. """
-
         ok = self.arm_interface.move_joints(joints, velocity)
         if not ok:
             rospy.logerr(self.error_msg)
@@ -180,8 +172,6 @@ class Arm(object):
             elif 'n' in motion["type"]:
                 rospy.loginfo("MoveJointsName: {}".format(motion['goal']))
                 ret = self.move_joints_alias(motion['goal'])
-
-
             if ret == False:
                 if motion["type"] is not 'n':
                     rospy.logerr(self.error_msg)
@@ -198,7 +188,6 @@ class Arm(object):
         return True
 
     def save_joint_position_alias(self, position_name):
-        
         if self.joint_pos_aliases is None:
             self.error_msg = "No joint position file provided when creating the arm. Try calling the load joint aliases service."
             return False
@@ -210,21 +199,16 @@ class Arm(object):
         return True
 
     def move_joints_alias(self, position_name):
-
         if self.joint_pos_aliases is None:
             self.error_msg = "No joint position file provided when creating the arm. Try calling the load joint aliases service."
             return False
-
         try:
             joints = self.joint_pos_aliases.get_joint_configuration(position_name)
         except KeyError:
             self.error_msg = "Alias not found. Existing positions are: " + str(self.get_joint_position_names())
             return False
 
-        
         self.move_joints(joints)
-
-
         return True
 
     def get_joints(self):
@@ -236,7 +220,6 @@ class Arm(object):
     def get_joint_position_names(self):
         return self.joint_pos_aliases.joint_positions.keys()
 
-    
     def execute_actionlist(self, filename):
         try:
             motion_chain = ActionlistParser.parse(filename)
@@ -269,6 +252,7 @@ class Arm(object):
     @error_msg.setter
     def error_msg(self, value):
         self.arm_interface.last_error_msg = value
+
 
 class ArmMotionChain(object):
     def __init__(self):
