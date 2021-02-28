@@ -34,7 +34,6 @@
         <Action ID="Sleep">
             <input_port type="float" name="seconds"/>
         </Action>
-        <SubTree ID="Sub"/>
         <Condition ID="UR10eOnline"/>
         <Action ID="Velocity">
             <input_port type="float" name="velocity"/>

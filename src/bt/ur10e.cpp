@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 
     using namespace UR10e;
 
-    // Node regostration
+    // Node registration
     factory.registerSimpleCondition("UR10eOnline", std::bind(isOnline));
     factory.registerSimpleAction("Pause", std::bind(Pause));
     factory.registerSimpleAction("Grip", std::bind(grip));
