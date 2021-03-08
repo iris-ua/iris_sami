@@ -3,9 +3,11 @@
 import rospy
 import math
 
-from sami.arm import Arm
-from sami.gripper import Gripper
+from sami.arm import Arm # pylint: disable=import-error, no-name-in-module
+from sami.gripper import Gripper # pylint: disable=import-error, no-name-in-module
 from iris_sami.srv import Status, Velocity, JointGoal, JointGoalName, SaveJointGoalName, Actionlist, LoadJointGoalName, PoseGoal, RelativeMove, NoArguments
+from ur_msgs.srv import SetSpeedSliderFraction
+
 
 arm = None
 gripper = None
@@ -119,9 +121,19 @@ def main():
     arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="positions.yaml")
     arm.velocity = 0.2
 
-    gripper = Gripper('cr200-85', host='localhost', port=44221)
-    gripper.grip()
-    gripper.release()
+    # Temporary set speed slider
+    try:
+        rospy.wait_for_service('/ur_hardware_interface/set_speed_slider', timeout=2)
+        set_speed = rospy.ServiceProxy('/ur_hardware_interface/set_speed_slider', SetSpeedSliderFraction)
+        resp = set_speed(0.3)
+        print(resp)
+    except (rospy.ServiceException,rospy.exceptions.ROSException) as e:
+        print("Service call failed: %s"%e)
+    
+
+    # gripper = Gripper('cr200-85', host='localhost', port=44221)
+    # gripper.grip()
+    # gripper.release()
 
     print('Server is ready to take commands')
     rospy.spin()
