@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import rospy
-import math
 
 from sami.arm import Arm
 from sami.gripper import Gripper
@@ -127,11 +126,14 @@ def main():
         resp = set_speed(0.3)
         print(resp)
     except (rospy.ServiceException,rospy.exceptions.ROSException) as e:
-        print("Service call failed: %s"%e)
+        print("Service call failed: %s" % e)
     
-
-    gripper = Gripper('cr200-85', host='10.1.0.2', port=44221)
-
+    # Connect to Gripper
+    try:
+        gripper = Gripper('cr200-85', host='10.1.0.2', port=44221)
+    except Exception as e:
+        gripper = Gripper('cr200-85', host='localhost', port=44221)
+         
     print('Server is ready to take commands')
     rospy.spin()
 
