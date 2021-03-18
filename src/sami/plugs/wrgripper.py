@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 import xmlrpclib
 
 from sami.interface import GripperIF
@@ -11,6 +11,8 @@ class CR200Plug(GripperIF):
         self.grpc = xmlrpclib.ServerProxy(connstr)
 
         self.gid = self.grpc.GetGrippers()[0]
+
+        self.grpc.SetReleaseLimit(self.gid, 1, 100.0)
 
     def grip(self):
         return self.grpc.Grip(self.gid, 1)

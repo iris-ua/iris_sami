@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-
 import rospy
 import math
 
-from sami.arm import Arm # pylint: disable=import-error, no-name-in-module
-from sami.gripper import Gripper # pylint: disable=import-error, no-name-in-module
+from sami.arm import Arm
+from sami.gripper import Gripper
 from iris_sami.srv import Status, Velocity, JointGoal, JointGoalName, SaveJointGoalName, Actionlist, LoadJointGoalName, PoseGoal, RelativeMove, NoArguments
 from ur_msgs.srv import SetSpeedSliderFraction
 
@@ -75,7 +74,7 @@ def move_pose_srv(req):
     ok = arm.move_pose(pose)
     if not ok:
         return [False, arm.error_msg]
-    return [True, 'Moced Robot to pose ' + str(pose)]
+    return [True, 'Moved Robot to pose ' + str(pose)]
 
 
 def move_pose_relative_srv(req):
@@ -131,9 +130,7 @@ def main():
         print("Service call failed: %s"%e)
     
 
-    # gripper = Gripper('cr200-85', host='localhost', port=44221)
-    # gripper.grip()
-    # gripper.release()
+    gripper = Gripper('cr200-85', host='10.1.0.2', port=44221)
 
     print('Server is ready to take commands')
     rospy.spin()
