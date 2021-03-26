@@ -132,7 +132,10 @@ def main():
     try:
         gripper = Gripper('cr200-85', host='10.1.0.2', port=44221)
     except Exception as e:
-        gripper = Gripper('cr200-85', host='localhost', port=44221)
+        try:
+            gripper = Gripper('cr200-85', host='localhost', port=44221)
+        except Exception as e:
+            print('Cant connect to any gripper')
          
     print('Server is ready to take commands')
     rospy.spin()

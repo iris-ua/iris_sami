@@ -22,7 +22,7 @@ class CR200Plug(GripperIF):
         return self.grpc.Release(self.gid, 1)
 
     def get_status(self):
-        return self.grpc.GetState(self.gid, 1)
+        return self.grpc.GetState(self.gid)
 
     def get_position(self):
         return self.grpc.GetPos(self.gid)
