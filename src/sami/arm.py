@@ -9,59 +9,6 @@ def EzPose(x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0):
     return [x, y, z, roll, pitch, yaw]
 
 
-class ActionlistParser():
-    ''' Creating a similar static class allows for different file structures.
-    Each parser must take the files content and expose it as a motion chain using Ezposes etc.'''
-    @staticmethod
-    def parse(filename):
-        # Load file
-        try:
-            action_file = open(filename, 'r')
-        except IOError:
-            try:
-                action_file = open(rospkg.RosPack().get_path('iris_sami') + "/actionlists/" + filename, 'r')
-            except IOError:
-                raise IOError
-
-        # Extract each individual action        
-        try:
-            csv_reader = csv.reader(action_file, delimiter=',')
-            actions = []
-            line_nr = 0
-            for row in csv_reader:
-                if(line_nr != 0):
-                    if("[" in row[2]): # If the arguments column is an array of x, y, z information
-                        # transform it into a python array of x,y,z information and use the 
-                        # parseRotationArgs to transform string values (pi/2 -> 1.57 etc) into real numbers
-                        arguments = ActionlistParser._evaluateExpression(row[2].replace("[", "").replace("]", "").split(" "))
-                    else: arguments = row[2]
-                    actions.append((row[0], row[1], arguments))
-                line_nr += 1
-        except Exception as e:
-            rospy.logerr(e)
-            raise Exception
-    
-        # Translate these actions as a motion chain 
-        chain = ArmMotionChain()
-        for action in actions:
-            reps, cmd, args = action
-            for i in range(0, int(reps)):
-                if cmd == 'jointGoal':
-                    chain.joints_name(args).sleep(2)
-                elif cmd == 'rotate':
-                    chain.pose_relative(dpose=EzPose(roll=args[0], pitch=args[1], yaw=args[2])).sleep(2)
-                elif cmd == 'move':
-                    chain.pose_relative(dpose=EzPose(x=args[0], y=args[1], z=args[2])).sleep(2)
-        return chain
-
-    @staticmethod
-    def _evaluateExpression(expr):
-        ''' Evaluates and replaces all occurances of 'pi' and related constant representations '''
-        for i in range(0, len(expr)):
-            expr[i] = eval(expr[i].replace('pi', str(math.pi)))
-        return expr
-
-
 class JointPositionAliases():
     def __init__(self, filename):
         self.positions_file = filename
@@ -155,6 +102,9 @@ class Arm(object):
 
     def move_chain(self, chain):
         ret = True
+
+        print('Start Move Chain')
+
         for i, motion in enumerate(chain.mchain):
             if 'q' in motion['type']:
                 rospy.loginfo("MoveJoints: {}".format(motion['goal']))
@@ -169,9 +119,13 @@ class Arm(object):
                 rospy.loginfo("Sleeping: {} seconds".format(motion['goal']))
                 rospy.sleep(motion['goal'])
                 ret = True
-            elif 'n' in motion["type"]:
-                rospy.loginfo("MoveJointsName: {}".format(motion['goal']))
+            elif 'a' in motion['type']:
+                rospy.loginfo('MoveJointsName: {}'.format(motion['goal']))
                 ret = self.move_joints_alias(motion['goal'])
+            elif 'f' in motion["type"]:
+                rospy.loginfo('Executing custom function')
+                ret = motion['goal']()
+
             if ret == False:
                 if motion["type"] is not 'n':
                     rospy.logerr(self.error_msg)
@@ -219,23 +173,6 @@ class Arm(object):
 
     def get_joint_position_names(self):
         return self.joint_pos_aliases.joint_positions.keys()
-
-    def execute_actionlist(self, filename):
-        try:
-            motion_chain = ActionlistParser.parse(filename)
-        except IOError as oserr:
-            self.error_msg = "Can't load file '" + filename + "'\n" + oserr
-            rospy.logerr(self.error_msg)
-            return False
-        except Exception as e:
-            self.error_msg = "Can't parse file '" + filename + "'\n" + e
-            rospy.logerr(self.error_msg)
-            return False
-
-        ok = self.move_chain(motion_chain)
-        if ok != 0:
-            return False
-        return True
         
     @property
     def velocity(self):
@@ -263,7 +200,7 @@ class ArmMotionChain(object):
         return self
 
     def joints_name(self, name, velocity = None):
-        self.mchain.append({'goal': name, 'type': 'n', 'velocity': velocity})
+        self.mchain.append({'goal': name, 'type': 'a', 'velocity': velocity})
         return self
 
     def pose(self, pose, velocity = None):
@@ -276,6 +213,10 @@ class ArmMotionChain(object):
 
     def sleep(self, seconds):
         self.mchain.append({'goal': seconds, 'type': 's'})
+        return self
+
+    def func(self, func):
+        self.mchain.append({'goal':func, 'type':'f'})
         return self
 
     def clear(self):
