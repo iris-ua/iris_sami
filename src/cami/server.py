@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 import rospy
+from ur_msgs.srv import SetSpeedSliderFraction
 
 from sami.arm import Arm
 from sami.gripper import Gripper
 from iris_sami.srv import Status, Velocity, JointGoal, JointGoalName, SaveJointGoalName, Actionlist, LoadJointGoalName, PoseGoal, RelativeMove, NoArguments
-from ur_msgs.srv import SetSpeedSliderFraction
-
 
 arm = None
 gripper = None
@@ -119,6 +118,8 @@ def main():
     arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="positions.yaml")
     arm.velocity = 0.2
 
+    print('Robot is ready to receive commands')
+
     # Temporary set speed slider
     try:
         rospy.wait_for_service('/ur_hardware_interface/set_speed_slider', timeout=2)
@@ -136,8 +137,9 @@ def main():
             gripper = Gripper('cr200-85', host='localhost', port=44221)
         except Exception as e:
             print('Cant connect to any gripper')
+
+    print('Gripper is ready to receive commands')
          
-    print('Server is ready to take commands')
     rospy.spin()
 
 
