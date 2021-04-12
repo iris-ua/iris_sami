@@ -1,4 +1,4 @@
-string joint_position_name
+string name
 ---
 bool success
 string feedback

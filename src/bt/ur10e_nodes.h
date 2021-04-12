@@ -198,10 +198,10 @@ namespace UR10e
             BT::Optional<std::string> alias = getInput<std::string>("alias");
 
             ros::NodeHandle n;
-            ros::ServiceClient client = n.serviceClient<iris_sami::JointGoalName>("iris_sami/joints_alias");
+            ros::ServiceClient client = n.serviceClient<iris_sami::JointGoalName>("iris_sami/alias");
             iris_sami::JointGoalName srv;
 
-            srv.request.joint_position_name = alias.value();
+            srv.request.name = alias.value();
             
             if (client.call(srv))
             {
@@ -210,7 +210,7 @@ namespace UR10e
             }
             else
             {
-                std::cout << "Failed to call service iris_sami/joints_alias" << std::endl;
+                std::cout << "Failed to call service iris_sami/alias" << std::endl;
                 return BT::NodeStatus::FAILURE;
             }
         }

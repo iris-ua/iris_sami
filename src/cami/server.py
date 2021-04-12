@@ -37,7 +37,7 @@ def move_joint_srv(req):
 
 
 def move_joint_name_srv(req):
-    pos_name = req.joint_position_name
+    pos_name = req.name
     ok = arm.move_joints_alias(pos_name)
     if not ok:
         return [False, arm.error_msg]
@@ -45,7 +45,7 @@ def move_joint_name_srv(req):
 
 
 def save_joint_name_srv(req):
-    position = req.position_name
+    position = req.name
     ok = arm.save_joint_position_alias(position)
     if not ok:
         return [False, arm.error_msg]
@@ -106,8 +106,8 @@ def main():
     rospy.Service('/iris_sami/status', Status, info_srv)
     rospy.Service('/iris_sami/velocity', Velocity, velocity_srv)
     rospy.Service('/iris_sami/joints', JointGoal, move_joint_srv)
-    rospy.Service('/iris_sami/joints_alias', JointGoalName, move_joint_name_srv)
-    rospy.Service('/iris_sami/save_joints_alias', SaveJointGoalName, save_joint_name_srv)
+    rospy.Service('/iris_sami/alias', JointGoalName, move_joint_name_srv)
+    rospy.Service('/iris_sami/save_alias', SaveJointGoalName, save_joint_name_srv)
     rospy.Service('/iris_sami/load_joints_alias', LoadJointGoalName, load_joint_name_srv)
     rospy.Service('/iris_sami/actionlist', Actionlist, actionlist_srv)
     rospy.Service('/iris_sami/pose', PoseGoal, move_pose_srv)
