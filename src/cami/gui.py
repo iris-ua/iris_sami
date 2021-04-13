@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-import rospkg, rospy, rosparam, gi
+import rospkg, rospy, rosparam, gi, sys, signal
 from math import radians, degrees
+from std_srvs.srv import Trigger
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+from gi.repository import Gtk, GLib
 
 from iris_sami.srv import JointGoalName, RelativeMove, PoseGoal, JointGoal, Status, NoArguments
 
@@ -223,6 +224,28 @@ class GripperBox(Gtk.Box):
             print("Service call failed: %s"%e)
 
 
+class FTSensorBox(Gtk.Box):
+    def __init__(self):
+        Gtk.Box.__init__(self, spacing=6)
+
+        self.pack_start(Gtk.Box(), True, True, 0)
+
+        self.zero_button = Gtk.Button(label='Zero FT Sensor')
+        self.zero_button.connect("clicked", self.on_zero_button_clicked)
+        self.pack_start(self.zero_button, False, False, 0)
+
+        self.pack_start(Gtk.Box(), True, True, 0)
+
+
+    def on_zero_button_clicked(self, widget):
+        rospy.wait_for_service('/ur_hardware_interface/zero_ftsensor')
+        try:
+            zeroServ = rospy.ServiceProxy('/ur_hardware_interface/zero_ftsensor', Trigger)
+            zeroServ()
+        except rospy.ServiceException as e:
+            print("Service call failed: %s"%e)
+
+
 class MyWindow(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="iris_sami GUI control")
@@ -230,6 +253,7 @@ class MyWindow(Gtk.Window):
         self.set_border_width(10)
 
         vbox = Gtk.VBox(spacing=10)
+        # Moiton Planning
         vbox.pack_start(Gtk.Label("Move Robot to a saved custom position"), False, False, 0)
         vbox.pack_start(AliasBox(), False, False, 0)
         vbox.pack_start(Gtk.Label("Move Robot in the EE orientation"), False, False, 0)
@@ -238,14 +262,32 @@ class MyWindow(Gtk.Window):
         vbox.pack_start(PoseBox(), False, False, 0)
         vbox.pack_start(Gtk.Label("Set custom values for Robot's Joints"), False, False, 0)
         vbox.pack_start(JointsBox(), False, False, 0)
-        vbox.pack_start(Gtk.Label("Gripper Control"), False, False, 0)
-        vbox.pack_start(GripperBox(), False, False, 0)
+        # Controls
+        cbox = Gtk.Box(spacing=10)
+        cbox.pack_start(Gtk.Box(), True, True, 0)
+        gbox = Gtk.VBox(spacing=10)
+        gbox.pack_start(Gtk.Label("Gripper Control"), False, False, 0)
+        gbox.pack_start(GripperBox(), False, False, 0)
+        cbox.pack_start(gbox, False, False, 0)
+        fbox = Gtk.VBox(spacing=10)
+        fbox.pack_start(Gtk.Label("FT Sensor Control"), False, False, 0)
+        fbox.pack_start(FTSensorBox(), False, False, 0)
+        cbox.pack_start(fbox, False, False, 0)
+        cbox.pack_start(Gtk.Box(), True, True, 0)
+        vbox.pack_start(cbox, False, False, 0)
         vbox.pack_start(Gtk.Box(), True, True, 0)
 
         self.add(vbox)
 
-        
-win = MyWindow()
-win.connect("destroy", Gtk.main_quit)
-win.show_all()
-Gtk.main()
+
+def main():
+    GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, Gtk.main_quit)
+
+    win = MyWindow()
+    win.connect("destroy", Gtk.main_quit)
+    win.show_all()
+    Gtk.main()
+
+
+if __name__ == '__main__':
+    main()

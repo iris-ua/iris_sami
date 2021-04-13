@@ -4,7 +4,8 @@ from ur_msgs.srv import SetSpeedSliderFraction
 
 from sami.arm import Arm
 from sami.gripper import Gripper
-from iris_sami.srv import Status, Velocity, JointGoal, JointGoalName, SaveJointGoalName, Actionlist, LoadJointGoalName, PoseGoal, RelativeMove, NoArguments
+from iris_sami.srv import Status, Velocity, JointGoal, JointGoalName, SaveJointGoalName, Actionlist, \
+    LoadJointGoalName, PoseGoal, RelativeMove, NoArguments
 
 arm = None
 gripper = None
@@ -36,6 +37,7 @@ def move_joint_srv(req):
 
 
 def move_joint_name_srv(req):
+    rospy.loginfo('Alias Position service called with name ' + str(req))
     pos_name = req.name
     ok = arm.move_joints_alias(pos_name)
     if not ok:
@@ -68,6 +70,7 @@ def actionlist_srv(req):
 
 
 def move_pose_srv(req):
+    rospy.loginfo('Pose Goal service called with pose\n' + str(req))
     pose = [req.x, req.y, req.z, req.roll, req.pitch, req.yaw]
     ok = arm.move_pose(pose)
     if not ok:
@@ -76,6 +79,7 @@ def move_pose_srv(req):
 
 
 def move_pose_relative_srv(req):
+    rospy.loginfo('Relative Move service called with values\n' + str(req))
     pose = [req.x, req.y, req.z, req.roll, req.pitch, req.yaw]
     ok = arm.move_pose_relative(pose)
     if not ok:
@@ -118,16 +122,15 @@ def main():
     arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="positions.yaml")
     arm.velocity = 0.2
 
-    print('Robot is ready to receive commands')
+    rospy.loginfo('Robot is ready to receive commands')
 
     # Temporary set speed slider
     try:
         rospy.wait_for_service('/ur_hardware_interface/set_speed_slider', timeout=2)
         set_speed = rospy.ServiceProxy('/ur_hardware_interface/set_speed_slider', SetSpeedSliderFraction)
-        resp = set_speed(0.3)
-        print(resp)
+        set_speed(0.3)
     except (rospy.ServiceException,rospy.exceptions.ROSException) as e:
-        print("Service call failed: %s" % e)
+        rospy.logerr("Service call failed: %s" % e)
     
     # Connect to Gripper
     try:
@@ -136,9 +139,9 @@ def main():
         try:
             gripper = Gripper('cr200-85', host='localhost', port=44221)
         except Exception as e:
-            print('Cant connect to any gripper')
+            rospy.logwarn('Cant connect to any gripper')
 
-    print('Gripper is ready to receive commands')
+    rospy.loginfo('Gripper is ready to receive commands')
          
     rospy.spin()
 
