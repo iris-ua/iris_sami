@@ -13,7 +13,8 @@ class CR200Plug(GripperIF):
         self.gid = self.grpc.GetGrippers()[0]
 
         if options['host'] is not 'localhost':
-            self.grpc.SetReleaseLimit(self.gid, 1, 100.0)
+            self.grpc.SetReleaseLimit(self.gid, 1, 80.0)
+            self.grpc.SetNoPartLimit(self.gid, 1, 1.0)
 
     def grip(self):
         return self.grpc.Grip(self.gid, 1)
