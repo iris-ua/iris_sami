@@ -28,6 +28,18 @@ class CR200Plug(GripperIF):
     def get_position(self):
         return self.grpc.GetPos(self.gid)
 
+    def set_led_preset(self, preset):
+        return self.grpc.SetLEDPreset(self.gid, preset)
+
+    def set_led_animation(self, animation):
+        return self.grpc.SetLEDAnimation(self.gid, 1, animation)
+
+    def set_led_color(self, color):
+        return self.grpc.SetLEDColor(self.gid, 1, color)
+
+    def set_led_speed(self, speed):
+        return self.grpc.SetLEDSpeed(self.gid, 1, speed)
+
     def get_force(self):
         raise NotImplementedError
 
