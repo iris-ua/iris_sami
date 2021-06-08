@@ -32,7 +32,14 @@ class MoveItPlug(ArmIF):
             self.moveg.set_max_velocity_scaling_factor(velocity)
 
         try:
-            self.moveg.go(joints, wait=True)
+            # STOMP
+            self.moveg.set_start_state(self.robot.get_current_state())
+            plan = self.moveg.plan(joints)
+            self.moveg.execute(plan)
+
+            # # OMPL
+            # self.moveg.go(joints, wait=True)
+
             self.moveg.stop()
         except MoveItCommanderException as e:
             self.last_error_msg = str(e)
@@ -46,8 +53,15 @@ class MoveItPlug(ArmIF):
             self.moveg.set_max_velocity_scaling_factor(velocity)
 
         try:
+             # STOMP
+            self.moveg.set_start_state(self.robot.get_current_state())
+            plan = self.moveg.plan(pose)
+            self.moveg.execute(plan)
+            
+            # # OMPL
             self.moveg.set_pose_target(pose)
             ok = self.moveg.go(wait=True)
+
             self.moveg.stop()
             self.moveg.clear_pose_targets()
             if not ok:
