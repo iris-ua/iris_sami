@@ -56,11 +56,11 @@ class MoveItPlug(ArmIF):
              # STOMP
             self.moveg.set_start_state(self.robot.get_current_state())
             plan = self.moveg.plan(pose)
-            self.moveg.execute(plan)
+            ok = self.moveg.execute(plan)
             
             # # OMPL
-            self.moveg.set_pose_target(pose)
-            ok = self.moveg.go(wait=True)
+            # self.moveg.set_pose_target(pose)
+            # ok = self.moveg.go(wait=True)
 
             self.moveg.stop()
             self.moveg.clear_pose_targets()
@@ -87,6 +87,7 @@ class MoveItPlug(ArmIF):
         pose = tr.translation_from_matrix(xform).tolist() + list(tr.euler_from_matrix(xform))
 
         wp = [list_to_pose(pose)]  # waypoints
+        self.moveg.set_start_state(self.robot.get_current_state())
         (plan, fraction) = self.moveg.compute_cartesian_path(wp, eef_step = 0.01, jump_threshold = 0.0)
         if fraction < 1.0:
             self.last_error_msg = "No motion plan found."
