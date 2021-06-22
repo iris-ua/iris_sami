@@ -87,6 +87,15 @@ def move_pose_relative_srv(req):
     return [True, 'Moved Robot relatively in ' + str(pose)]
 
 
+def move_pose_relative_world_srv(req):
+    rospy.loginfo('Relative World Move service called with values\n' + str(req))
+    pose = [req.x, req.y, req.z, req.roll, req.pitch, req.yaw]
+    ok = arm.move_pose_relative_world(pose)
+    if not ok:
+        return [False, arm.error_msg]
+    return [True, 'Moved Robot World relatively in ' + str(pose)]
+
+
 def grip_srv(req):
     rospy.loginfo('Grip service called')
     result = gripper.grip()
@@ -115,6 +124,7 @@ def main():
     rospy.Service('/iris_sami/actionlist', Actionlist, actionlist_srv)
     rospy.Service('/iris_sami/pose', PoseGoal, move_pose_srv)
     rospy.Service('/iris_sami/move', RelativeMove, move_pose_relative_srv)
+    rospy.Service('/iris_sami/move_world', RelativeMove, move_pose_relative_world_srv)
     rospy.Service('/iris_sami/grip', NoArguments, grip_srv)
     rospy.Service('/iris_sami/release', NoArguments, release_srv)
 

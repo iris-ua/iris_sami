@@ -1,6 +1,5 @@
 
 import sys
-import copy
 
 import moveit_commander
 
@@ -112,7 +111,8 @@ class MoveItPlug(ArmIF):
             self.moveg.set_max_velocity_scaling_factor(velocity)
 
         pose = pose_to_list(self.moveg.get_current_pose().pose)
-        pose = np.sum(pose, dpose)
+        pose = np.append(pose[0:3], tr.euler_from_quaternion(pose[3:]))
+        pose = np.add(pose, dpose)
 
         wp = [list_to_pose(pose)]
         (plan, fraction) = self.moveg.compute_cartesian_path(wp, eef_step = 0.01, jump_threshold = 0.0)
