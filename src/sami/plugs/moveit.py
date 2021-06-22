@@ -115,6 +115,7 @@ class MoveItPlug(ArmIF):
         pose = np.add(pose, dpose)
 
         wp = [list_to_pose(pose)]
+        self.moveg.set_start_state(self.robot.get_current_state())
         (plan, fraction) = self.moveg.compute_cartesian_path(wp, eef_step = 0.01, jump_threshold = 0.0)
         if fraction < 1.0:
             self.last_error_msg = "No motion plan found."
