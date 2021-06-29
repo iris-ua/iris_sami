@@ -12,7 +12,6 @@ gripper = None
 
 
 def info_srv(req):
-    rospy.loginfo('Status service called')
     joints = arm.get_joints()
     pose = arm.get_pose()
     velocity = arm.velocity

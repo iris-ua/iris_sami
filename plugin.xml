@@ -1,0 +1,20 @@
+<library path="src">
+  <class name="Sami Plugin" type="rqt_sami.plugin.SamiPlugin" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      Plugin that enables iris_sami functions as a GUI application
+    </description>
+    <qtgui>
+      <!-- optional grouping...
+      <group>
+        <label>Group</label>
+      </group>
+      <group>
+        <label>Subgroup</label>
+      </group>
+      -->
+      <label>iris_sami rqt Plugin</label>
+      <icon type="theme">system-help</icon>
+      <statustip>Great user interface to provide real value.</statustip>
+    </qtgui>
+  </class>
+</library>

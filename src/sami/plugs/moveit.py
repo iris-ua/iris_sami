@@ -52,14 +52,14 @@ class MoveItPlug(ArmIF):
             self.moveg.set_max_velocity_scaling_factor(velocity)
 
         try:
-             # STOMP
+            # STOMP
             self.moveg.set_start_state(self.robot.get_current_state())
-            plan = self.moveg.plan(pose)
-            ok = self.moveg.execute(plan)
+            # plan = self.moveg.plan(pose)
+            # ok = self.moveg.execute(plan)
             
             # # OMPL
-            # self.moveg.set_pose_target(pose)
-            # ok = self.moveg.go(wait=True)
+            self.moveg.set_pose_target(pose)
+            ok = self.moveg.go(wait=True)
 
             self.moveg.stop()
             self.moveg.clear_pose_targets()
