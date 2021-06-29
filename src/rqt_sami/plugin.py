@@ -11,6 +11,7 @@ from iris_sami.srv import JointGoalName, RelativeMove, PoseGoal, JointGoal, Stat
 BASE_DIR = rospkg.RosPack().get_path('iris_sami')
 ALIAS_FILE = BASE_DIR + '/yaml/positions.yaml'
 
+
 class SamiPlugin(Plugin):
 
     def __init__(self, context):
@@ -43,8 +44,6 @@ class SamiPlugin(Plugin):
         # Gripper services
         self._widget.grip.clicked[bool].connect(self.gripper_button_clicked)
         self._widget.release.clicked[bool].connect(self.release_button_clicked)
-
-
         # Status thread for robot information       
         self.thread = QThread()
         self.worker = Worker()
@@ -69,10 +68,12 @@ class SamiPlugin(Plugin):
         # TODO unregister all publishers here
         pass
 
+
     def save_settings(self, plugin_settings, instance_settings):
         # TODO save intrinsic configuration, usually using:
         # instance_settings.set_value(k, v)
         pass
+
 
     def restore_settings(self, plugin_settings, instance_settings):
         # TODO restore intrinsic configuration, usually using:
@@ -115,6 +116,7 @@ class SamiPlugin(Plugin):
 
 
     def rel_move_button_clicked(self):
+        # Relative move service caller with XYZ RPY fields
         x = self._widget.r_x.text()
         y = self._widget.r_y.text()
         z = self._widget.r_z.text()
@@ -135,6 +137,7 @@ class SamiPlugin(Plugin):
     
 
     def rel_move_reset_button_clicked(self):
+        # Clear all relative move related fields
         self._widget.r_x.clear()
         self._widget.r_y.clear()
         self._widget.r_z.clear()
@@ -144,6 +147,7 @@ class SamiPlugin(Plugin):
 
 
     def pose_button_clicked(self):
+        # Pose goal service caller with XYZ RPY fields
         x = self._widget.p_x.text()
         y = self._widget.p_y.text()
         z = self._widget.p_z.text()
@@ -164,6 +168,7 @@ class SamiPlugin(Plugin):
     
 
     def pose_reset_button_clicked(self):
+        # Clear all relative move related fields
         self._widget.p_x.clear()
         self._widget.p_y.clear()
         self._widget.p_z.clear()
@@ -173,6 +178,7 @@ class SamiPlugin(Plugin):
 
     
     def joints_button_clicked(self):
+        # Joints goal service caller with 6 joint fields
         j_s_p = self._widget.j_s_p.text()
         j_s_l = self._widget.j_s_l.text()
         j_elb = self._widget.j_elb.text()
@@ -193,6 +199,7 @@ class SamiPlugin(Plugin):
     
 
     def joints_reset_button_clicked(self):
+        # Clear all joints goal related fields
         self._widget.j_s_p.clear()
         self._widget.j_s_l.clear()
         self._widget.j_elb.clear()
@@ -202,6 +209,7 @@ class SamiPlugin(Plugin):
     
 
     def gripper_button_clicked(self):
+        # Grip service caller
         rospy.wait_for_service('iris_sami/grip')
         try:
             gripServ = rospy.ServiceProxy('iris_sami/grip', NoArguments)
@@ -212,6 +220,7 @@ class SamiPlugin(Plugin):
         self._widget.com_response.setPlainText(resp)
 
     def release_button_clicked(self):
+        # Release service caller
         rospy.wait_for_service('iris_sami/release')
         try:
             releaseServ = rospy.ServiceProxy('iris_sami/release', NoArguments)
@@ -241,8 +250,9 @@ class Worker(QObject):
             except rospy.ServiceException as e:
                 resp = "Service call failed: %s" % e
                 self.status_signal.emit(resp)
+                continue
             
-            if resp.success:
+            if resp.success != None and resp.success:
                 status = resp.feedback
                 joints = [round(x, 5) for x in resp.joints]
                 position = resp.pose.position

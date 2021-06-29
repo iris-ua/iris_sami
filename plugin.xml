@@ -12,9 +12,9 @@
         <label>Subgroup</label>
       </group>
       -->
-      <label>iris_sami rqt Plugin</label>
+      <label>Sami</label>
       <icon type="theme">system-help</icon>
-      <statustip>Great user interface to provide real value.</statustip>
+      <statustip>A Python GUI plugin to interact with the iris_sami service server.</statustip>
     </qtgui>
   </class>
 </library>

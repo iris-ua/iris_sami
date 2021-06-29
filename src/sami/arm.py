@@ -1,4 +1,3 @@
-
 import rospy, rosparam, rospkg
 import csv, math
 
@@ -24,8 +23,6 @@ class JointPositionAliases():
         except KeyError:
             raise KeyError
 
-
-
     def load_joint_position_file(self, filename):
         '''Returns the dict with the positions previously saved in a yaml file'''
         try:
@@ -44,7 +41,6 @@ class JointPositionAliases():
         self.positions_file = filename
 
         return data[0][0]
-
 
     def save_joint_position(self, position_name, joint_configuration):
         ''' Saves current joint configuration to <filename> with name <position_name>. If the provided file doesn't

@@ -6,7 +6,7 @@
     <node pkg="iris_sami" type="server.py" name="server" output="screen"/>
 
     <group if="$(arg gui)">
-        <node pkg="iris_sami" type="gui.py" name="gui" output="screen"/>
+        <node pkg="iris_sami" type="rqt_sami" name="rqt_sami" output="screen"/>
     </group>
 
 </launch>

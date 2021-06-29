@@ -114,6 +114,14 @@ def release_srv(req):
 def main():
     rospy.init_node('sami_server', anonymous=True)
 
+    global arm, gripper
+    # Connect to arm
+    arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="positions.yaml")
+    arm.velocity = 0.2
+
+    rospy.loginfo('Robot is ready to receive commands')
+
+    # Arm service registration
     rospy.Service('/iris_sami/status', Status, info_srv)
     rospy.Service('/iris_sami/velocity', Velocity, velocity_srv)
     rospy.Service('/iris_sami/joints', JointGoal, move_joint_srv)
@@ -124,14 +132,6 @@ def main():
     rospy.Service('/iris_sami/pose', PoseGoal, move_pose_srv)
     rospy.Service('/iris_sami/move', RelativeMove, move_pose_relative_srv)
     rospy.Service('/iris_sami/move_world', RelativeMove, move_pose_relative_world_srv)
-    rospy.Service('/iris_sami/grip', NoArguments, grip_srv)
-    rospy.Service('/iris_sami/release', NoArguments, release_srv)
-
-    global arm, gripper
-    arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="positions.yaml")
-    arm.velocity = 0.2
-
-    rospy.loginfo('Robot is ready to receive commands')
 
     # Temporary set speed slider
     try:
@@ -151,6 +151,10 @@ def main():
             rospy.logwarn('Cant connect to any gripper')
 
     rospy.loginfo('Gripper is ready to receive commands')
+
+    # Gripper service registration
+    rospy.Service('/iris_sami/grip', NoArguments, grip_srv)
+    rospy.Service('/iris_sami/release', NoArguments, release_srv)
          
     rospy.spin()
 

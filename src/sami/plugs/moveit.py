@@ -24,6 +24,7 @@ class MoveItPlug(ArmIF):
         self.pframe = self.moveg.get_planning_frame()
         self.numj = len(self.moveg.get_joints())
 
+
     def move_joints(self, joints, velocity):
         if velocity is None:
             self.moveg.set_max_velocity_scaling_factor(self.velocity)
@@ -31,19 +32,15 @@ class MoveItPlug(ArmIF):
             self.moveg.set_max_velocity_scaling_factor(velocity)
 
         try:
-            # STOMP
             self.moveg.set_start_state(self.robot.get_current_state())
             plan = self.moveg.plan(joints)
             self.moveg.execute(plan)
-
-            # # OMPL
-            # self.moveg.go(joints, wait=True)
-
             self.moveg.stop()
         except MoveItCommanderException as e:
             self.last_error_msg = str(e)
             return False
         return True
+
 
     def move_pose(self, pose, velocity):
         if velocity is None:
@@ -52,15 +49,9 @@ class MoveItPlug(ArmIF):
             self.moveg.set_max_velocity_scaling_factor(velocity)
 
         try:
-            # STOMP
             self.moveg.set_start_state(self.robot.get_current_state())
-            # plan = self.moveg.plan(pose)
-            # ok = self.moveg.execute(plan)
-            
-            # # OMPL
             self.moveg.set_pose_target(pose)
             ok = self.moveg.go(wait=True)
-
             self.moveg.stop()
             self.moveg.clear_pose_targets()
             if not ok:
@@ -70,6 +61,7 @@ class MoveItPlug(ArmIF):
             self.last_error_msg = str(e)
             self.moveg.clear_pose_targets()
             return False
+
 
     def move_pose_relative(self, dpose, velocity):
         if velocity is None:
@@ -104,6 +96,7 @@ class MoveItPlug(ArmIF):
 
         return True
     
+
     def move_pose_relative_world(self, dpose, velocity):
         if velocity is None:
             self.moveg.set_max_velocity_scaling_factor(self.velocity)

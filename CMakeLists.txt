@@ -44,7 +44,7 @@ target_link_libraries(ur10e_tree ${catkin_LIBRARIES} ${behaviortree_cpp_v3_LIBRA
 
 add_dependencies(ur10e_tree iris_sami_generate_messages_cpp)
 
-install(PROGRAMS scripts/rqt_iris_sami
+install(PROGRAMS scripts/rqt_sami
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
