@@ -1,41 +1,21 @@
 #!/usr/bin/env python
-
 import math
 import rospy
-import rospkg
 
-import socket, time
-
-from sami.arm import Arm, EzPose, ArmMotionChain, ActionlistParser
+from sami.arm import Arm, EzPose, ArmMotionChain
 from sami.gripper import Gripper
 
 def main():
     rospy.init_node('motion_planner', anonymous=True)
 
-    HOST = "10.1.0.2"    
-    SCRIPT_PORT = 30002          
-    BASE_DIR = rospkg.RosPack().get_path('iris_sami')
+    arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="positions.yaml")
+    arm.velocity = 0.2
 
-    # arm = Arm('ur10e_urscript', host=HOST, port=SCRIPT_PORT)
+    # gripper = Gripper('cr200-85', host='10.1.0.2', port=44221)
 
-    ActionlistParser.parse("actionlist_example.csv")
-    # arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="positions.yaml")
-    # arm = Arm('ur10e_moveit', group='manipulator')
-    # arm.velocity = 0.2
-    # arm.save_joint_position("new_position", BASE_DIR + "/yaml/positions.yaml")
-
-    # arm.load_joint_position_file(BASE_DIR + "/yaml/positions.yaml")
-    # arm.load_joint_position_file()
-    # print(arm.joint_positions)
-    # print(arm.get_joint_position_names())
-    # print(arm.get_joints())   
-    # arm.move_joints(joint_position_name="new_positio")
-
-    # # gripper = Gripper('cr200-85', host='10.1.0.2', port=44221)
-
-    # x = -0.6
-    # y = -0.176
-    # arm.move_pose(pose=[x, y, 0.6, 0, 0.5, math.pi + math.pi/6])
+    x = -0.6
+    y = -0.176
+    arm.move_pose(pose=[x, y, 0.6, 0, 0.5, math.pi + math.pi/6])
     # arm.move_pose(pose=[x, y, 0.5, 0, math.pi*0.5, math.atan2(y,x)])
     # print math.atan2(y,x)
 
