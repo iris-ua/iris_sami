@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 
-    <arg name="gui" default="true" doc="Starts GTK Gui" />
+    <arg name="gui" default="true" doc="Starts rqt plugin gui" />
 
     <node pkg="iris_sami" type="server.py" name="server" output="screen"/>
 
