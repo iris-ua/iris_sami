@@ -1,4 +1,3 @@
----
 bool success
 string feedback
 float64[] joints

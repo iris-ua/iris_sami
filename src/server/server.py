@@ -4,19 +4,41 @@ from ur_msgs.srv import SetSpeedSliderFraction
 
 from sami.arm import Arm
 from sami.gripper import Gripper
+from iris_sami.msg import Info
 from iris_sami.srv import Status, Velocity, JointGoal, JointGoalName, SaveJointGoalName, Actionlist, \
     LoadJointGoalName, PoseGoal, RelativeMove, NoArguments
 
 arm = None
 gripper = None
 
+status_pub = None
+
+def info_topic(event=None):
+    joints = arm.get_joints()
+    pose = arm.get_pose()
+    velocity = arm.velocity
+    try:
+        gripped = gripper.get_status() == 8
+        has_object = gripped and gripper.get_position() > 27
+    except AttributeError:
+        gripped = False
+        has_object = False
+    
+    status_pub.publish(Info(*[True, 'Arm is operational', joints, pose, velocity, gripped, has_object]))
+
 
 def info_srv(req):
     joints = arm.get_joints()
     pose = arm.get_pose()
     velocity = arm.velocity
-    return [True, 'Robot is operational', joints, pose, velocity]
-
+    try:
+        gripped = gripper.get_status() == 8
+        has_object = gripped and gripper.get_position() > 27
+    except AttributeError:
+        gripped = False
+        has_object = False
+    
+    return [True, 'Arm is operational', joints, pose, velocity, gripped, has_object]
 
 def velocity_srv(req):
     rospy.loginfo('Velocity service called with value ' + str(req.velocity))
@@ -155,6 +177,10 @@ def main():
     # Gripper service registration
     rospy.Service('/iris_sami/grip', NoArguments, grip_srv)
     rospy.Service('/iris_sami/release', NoArguments, release_srv)
+
+    global status_pub
+    status_pub = rospy.Publisher('iris_sami/status', Info, queue_size=1)
+    rospy.Timer(rospy.Duration(1.0/500.0), info_topic)
          
     rospy.spin()
 

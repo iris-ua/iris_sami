@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from httplib import CannotSendHeader, CannotSendRequest, ResponseNotReady
 import xmlrpclib
 
 from sami.interface import GripperIF
@@ -11,6 +12,8 @@ class CR200Plug(GripperIF):
         self.grpc = xmlrpclib.ServerProxy(connstr)
 
         self.gid = self.grpc.GetGrippers()[0]
+        self.state = self.grpc.GetState(self.gid)
+        self.position = self.grpc.GetPos(self.gid)
 
         if options['host'] is not 'localhost':
             self.grpc.SetReleaseLimit(self.gid, 1, 80.0)
@@ -23,10 +26,24 @@ class CR200Plug(GripperIF):
         return self.grpc.Release(self.gid, 1)
 
     def get_status(self):
-        return self.grpc.GetState(self.gid)
+        new_state = 0
+        try:
+            new_state = self.grpc.GetState(self.gid)
+        except (CannotSendHeader, CannotSendRequest, ResponseNotReady) as e:
+            new_state = self.state
+        
+        self.state = new_state        
+        return self.state
 
     def get_position(self):
-        return self.grpc.GetPos(self.gid)
+        new_pos = 0
+        try:
+            new_pos = self.grpc.GetPos(self.gid)
+        except (CannotSendHeader, CannotSendRequest, ResponseNotReady) as e:
+            new_pos = self.pos
+        
+        self.pos = new_pos        
+        return self.pos
 
     def set_led_preset(self, preset):
         return self.grpc.SetLEDPreset(self.gid, preset)
