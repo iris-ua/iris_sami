@@ -30,6 +30,7 @@ class CR200Plug(GripperIF):
         try:
             new_state = self.grpc.GetState(self.gid)
         except (CannotSendHeader, CannotSendRequest, ResponseNotReady) as e:
+            print('Error obtaining gripper state', e)
             new_state = self.state
         
         self.state = new_state        
@@ -40,6 +41,7 @@ class CR200Plug(GripperIF):
         try:
             new_pos = self.grpc.GetPos(self.gid)
         except (CannotSendHeader, CannotSendRequest, ResponseNotReady) as e:
+            print('Error obtaining gripper position', e)
             new_pos = self.pos
         
         self.pos = new_pos        

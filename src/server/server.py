@@ -4,27 +4,31 @@ from ur_msgs.srv import SetSpeedSliderFraction
 
 from sami.arm import Arm
 from sami.gripper import Gripper
-from iris_sami.msg import Info
+from iris_sami.msg import ArmInfo, GripperInfo
 from iris_sami.srv import Status, Velocity, JointGoal, JointGoalName, SaveJointGoalName, Actionlist, \
     LoadJointGoalName, PoseGoal, RelativeMove, NoArguments
 
 arm = None
-gripper = None
+gripper_send = None
+gripper_recv = None
 
-status_pub = None
+arm_status_pub = None
+gripper_status_pub = None
 
-def info_topic(event=None):
+
+def arm_status_topic(event=None):
     joints = arm.get_joints()
     pose = arm.get_pose()
     velocity = arm.velocity
-    try:
-        gripped = gripper.get_status() == 8
-        has_object = gripped and gripper.get_position() > 27
-    except AttributeError:
-        gripped = False
-        has_object = False
     
-    status_pub.publish(Info(*[True, 'Arm is operational', joints, pose, velocity, gripped, has_object]))
+    arm_status_pub.publish(ArmInfo(*[True, 'Arm is operational', joints, pose, velocity]))
+
+
+def gripper_status_topic(event=None):
+    gripped = gripper_recv.get_status() == 8
+    has_object = gripped and gripper_recv.get_position() > 27
+
+    gripper_status_pub.publish(GripperInfo(*[True, 'Gripper is operational', gripped, has_object]))
 
 
 def info_srv(req):
@@ -32,13 +36,14 @@ def info_srv(req):
     pose = arm.get_pose()
     velocity = arm.velocity
     try:
-        gripped = gripper.get_status() == 8
-        has_object = gripped and gripper.get_position() > 27
+        gripped = gripper_recv.get_status() == 8
+        has_object = gripped and gripper_recv.get_position() > 27
     except AttributeError:
         gripped = False
         has_object = False
     
     return [True, 'Arm is operational', joints, pose, velocity, gripped, has_object]
+
 
 def velocity_srv(req):
     rospy.loginfo('Velocity service called with value ' + str(req.velocity))
@@ -119,7 +124,7 @@ def move_pose_relative_world_srv(req):
 
 def grip_srv(req):
     rospy.loginfo('Grip service called')
-    result = gripper.grip()
+    result = gripper_send.grip()
     if result:
         return [False, 'An error has ocurred']
     return [True, 'Gripper is Closed']
@@ -127,7 +132,7 @@ def grip_srv(req):
 
 def release_srv(req):
     rospy.loginfo('Release service called')
-    result = gripper.release()
+    result = gripper_send.release()
     if result:
         return [False, 'An error has ocurred']
     return [True, 'Gripper is Opened']
@@ -136,7 +141,7 @@ def release_srv(req):
 def main():
     rospy.init_node('sami_server', anonymous=True)
 
-    global arm, gripper
+    global arm, gripper_send, gripper_recv
     # Connect to arm
     arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="positions.yaml")
     arm.velocity = 0.2
@@ -165,10 +170,12 @@ def main():
     
     # Connect to Gripper
     try:
-        gripper = Gripper('cr200-85', host='10.1.0.2', port=44221)
+        gripper_send = Gripper('cr200-85', host='10.1.0.2', port=44221)
+        gripper_recv = Gripper('cr200-85', host='10.1.0.2', port=44221)
     except Exception as e:
         try:
-            gripper = Gripper('cr200-85', host='localhost', port=44221)
+            gripper_send = Gripper('cr200-85', host='localhost', port=44221)
+            gripper_recv = Gripper('cr200-85', host='localhost', port=44221)
         except Exception as e:
             rospy.logwarn('Cant connect to any gripper')
 
@@ -178,9 +185,13 @@ def main():
     rospy.Service('/iris_sami/grip', NoArguments, grip_srv)
     rospy.Service('/iris_sami/release', NoArguments, release_srv)
 
-    global status_pub
-    status_pub = rospy.Publisher('iris_sami/status', Info, queue_size=1)
-    rospy.Timer(rospy.Duration(1.0/500.0), info_topic)
+    # Status Publishers
+    global arm_status_pub, gripper_status_pub
+    arm_status_pub = rospy.Publisher('iris_sami/arm_status', ArmInfo, queue_size=1)
+    rospy.Timer(rospy.Duration(1.0/500.0), arm_status_topic)
+
+    gripper_status_pub = rospy.Publisher('iris_sami/gripper_status', GripperInfo, queue_size=1)
+    rospy.Timer(rospy.Duration(1.0/50.0), gripper_status_topic)
          
     rospy.spin()
 

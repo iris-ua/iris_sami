@@ -15,7 +15,8 @@ catkin_python_setup()
 
 add_message_files(
     FILES
-    Info.msg
+    ArmInfo.msg
+    GripperInfo.msg
 )
 
 add_service_files(

@@ -6,6 +6,7 @@ from python_qt_binding import loadUi
 from python_qt_binding.QtCore import QObject, QThread, pyqtSignal
 from python_qt_binding.QtWidgets import QWidget
 
+from iris_sami.msg import ArmInfo
 from iris_sami.srv import JointGoalName, RelativeMove, PoseGoal, JointGoal, Status, NoArguments
 
 BASE_DIR = rospkg.RosPack().get_path('iris_sami')
@@ -46,7 +47,7 @@ class SamiPlugin(Plugin):
         self._widget.release.clicked[bool].connect(self.release_button_clicked)
         # Status thread for robot information       
         self.thread = QThread()
-        self.worker = Worker()
+        self.worker = StatusDialog()
         self.worker.moveToThread(self.thread)
         self.worker.status_signal.connect(self.status_update)
         self.thread.started.connect(self.worker.get_status)
@@ -236,28 +237,35 @@ class SamiPlugin(Plugin):
         # Usually used to open a modal configuration dialog
 
 
-class Worker(QObject):
+class StatusDialog(QObject):
     status_signal = pyqtSignal(object)
+
+    def __init__(self):
+        super(StatusDialog, self).__init__()
+
+        self.status = ''
+        self.joints = ''
+        self.position = ''
+        self.orientation = ''
+        self.velocity = 0
+
+        rospy.Subscriber('iris_sami/arm_status', ArmInfo, self.status_subscriber)
+        
+
+    def status_subscriber(self, data):
+        if data.success:
+            self.status = data.feedback
+            self.joints = [round(x, 5) for x in data.joints]
+            self.position = data.pose.position
+            self.orientation = data.pose.orientation
+            self.velocity = data.velocity
+    
 
     def get_status(self):
         # Call status service to obtain information about the robot
         rate = rospy.Rate(10)
 
         while not rospy.is_shutdown():
-            try:
-                statusServ = rospy.ServiceProxy('iris_sami/status', Status)
-                resp = statusServ()
-            except rospy.ServiceException as e:
-                resp = "Service call failed: %s" % e
-                self.status_signal.emit(resp)
-                continue
-            
-            if resp.success != None and resp.success:
-                status = resp.feedback
-                joints = [round(x, 5) for x in resp.joints]
-                position = resp.pose.position
-                orientation = resp.pose.orientation
-                velocity = resp.velocity
 
             status_text = ("<html> \
                             <b>Status:</b> %s<br>\
@@ -265,7 +273,8 @@ class Worker(QObject):
                             <b>Position:</b> %s<br>\
                             <b>Orientation:</b> %s<br>\
                             <b>Velocity:</b> %f \
-                            </html>" % (status, str(joints), str(position), str(orientation), velocity))
+                            </html>" % (self.status, str(self.joints), str(self.position), 
+                                        str(self.orientation), self.velocity))
             
             self.status_signal.emit(status_text)
             
