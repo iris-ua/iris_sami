@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import rospy
+import rospy, socket
 from ur_msgs.srv import SetSpeedSliderFraction
 
 from sami.arm import Arm
@@ -14,6 +14,17 @@ gripper_recv = None
 
 arm_status_pub = None
 gripper_status_pub = None
+
+def isOpen(ip,port):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.settimeout(1)
+        s.connect((ip, int(port)))
+        s.shutdown(2)
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
 
 def arm_status_topic(event=None):
@@ -169,17 +180,22 @@ def main():
         rospy.logerr("Service call failed: %s" % e)
     
     # Connect to Gripper
-    try:
-        gripper_send = Gripper('cr200-85', host='10.1.0.2', port=44221)
-        gripper_recv = Gripper('cr200-85', host='10.1.0.2', port=44221)
-    except Exception as e:
+    if isOpen('10.1.0.2', 44221):
+        print('Port 10.1.0.2 is open')
+        try:
+            gripper_send = Gripper('cr200-85', host='10.1.0.2', port=44221)
+            gripper_recv = Gripper('cr200-85', host='10.1.0.2', port=44221)
+        except Exception as e:
+            rospy.logwarn('Cant connect to real Gripper - %s' % e)
+    elif isOpen('localhost', 44221):
+        print('Port localhost is open')
         try:
             gripper_send = Gripper('cr200-85', host='localhost', port=44221)
             gripper_recv = Gripper('cr200-85', host='localhost', port=44221)
         except Exception as e:
-            rospy.logwarn('Cant connect to any gripper')
-
-    rospy.loginfo('Gripper is ready to receive commands')
+            rospy.logwarn('Cant connect to fake gripper - %s' % e)
+    else:
+        rospy.logwarn('Cant connect to any Gripper')
 
     # Gripper service registration
     rospy.Service('/iris_sami/grip', NoArguments, grip_srv)
