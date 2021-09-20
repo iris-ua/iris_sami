@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>rqt_sami</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_8">
+  <layout class="QVBoxLayout" name="verticalLayout_10">
    <item>
     <widget class="QLabel" name="label_4">
      <property name="text">
@@ -86,7 +86,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="z_lin_up">
                <property name="text">
                 <string/>
                </property>
@@ -103,7 +103,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_2">
+              <widget class="QPushButton" name="z_lin_down">
                <property name="text">
                 <string/>
                </property>
@@ -150,7 +150,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_6">
+              <widget class="QPushButton" name="x_lin_up">
                <property name="text">
                 <string/>
                </property>
@@ -197,7 +197,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_4">
+              <widget class="QPushButton" name="y_lin_up">
                <property name="text">
                 <string/>
                </property>
@@ -227,7 +227,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_5">
+              <widget class="QPushButton" name="y_lin_down">
                <property name="text">
                 <string/>
                </property>
@@ -274,7 +274,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_3">
+              <widget class="QPushButton" name="x_lin_down">
                <property name="text">
                 <string/>
                </property>
@@ -335,7 +335,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_7">
+              <widget class="QPushButton" name="z_ang_up">
                <property name="text">
                 <string/>
                </property>
@@ -352,7 +352,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_8">
+              <widget class="QPushButton" name="z_ang_down">
                <property name="text">
                 <string/>
                </property>
@@ -399,7 +399,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_9">
+              <widget class="QPushButton" name="x_ang_up">
                <property name="text">
                 <string/>
                </property>
@@ -446,7 +446,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_10">
+              <widget class="QPushButton" name="y_ang_up">
                <property name="text">
                 <string/>
                </property>
@@ -483,7 +483,7 @@
                <property name="frameShadow">
                 <enum>QFrame::Raised</enum>
                </property>
-               <widget class="QWidget" name="">
+               <widget class="QWidget" name="layoutWidget">
                 <property name="geometry">
                  <rect>
                   <x>0</x>
@@ -743,7 +743,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_11">
+              <widget class="QPushButton" name="y_ang_down">
                <property name="text">
                 <string/>
                </property>
@@ -790,7 +790,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_12">
+              <widget class="QPushButton" name="x_ang_down">
                <property name="text">
                 <string/>
                </property>
@@ -1225,7 +1225,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="j_s_p_2">
+          <widget class="QLineEdit" name="s_s_s">
            <property name="placeholderText">
             <string>0.0</string>
            </property>
@@ -1239,7 +1239,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="j_s_l_2">
+          <widget class="QLineEdit" name="s_s_l">
            <property name="placeholderText">
             <string>0.0</string>
            </property>
@@ -1253,7 +1253,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="j_elb_2">
+          <widget class="QLineEdit" name="s_elb">
            <property name="placeholderText">
             <string>0.0</string>
            </property>
@@ -1267,7 +1267,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="j_w_4">
+          <widget class="QLineEdit" name="s_w_1">
            <property name="placeholderText">
             <string>0.0</string>
            </property>
@@ -1281,7 +1281,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="j_w_5">
+          <widget class="QLineEdit" name="s_w_2">
            <property name="placeholderText">
             <string>0.0</string>
            </property>
@@ -1295,7 +1295,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="j_w_6">
+          <widget class="QLineEdit" name="s_w_3">
            <property name="placeholderText">
             <string>0.0</string>
            </property>
@@ -1309,21 +1309,21 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit">
+          <widget class="QLineEdit" name="s_time">
            <property name="placeholderText">
             <string>0.0</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="j_reset_2">
+          <widget class="QPushButton" name="s_reset">
            <property name="text">
             <string>Reset</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="j_move_2">
+          <widget class="QPushButton" name="s_move">
            <property name="text">
             <string>Move</string>
            </property>
@@ -1396,6 +1396,115 @@
       </layout>
      </item>
      <item>
+      <spacer name="horizontalSpacer_34">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <widget class="QLabel" name="label_39">
+         <property name="text">
+          <string>FT Sensor</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="zero_ft_sensor">
+         <property name="text">
+          <string>Zero</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_35">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QLabel" name="label_37">
+         <property name="text">
+          <string>Active Controller</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="switch_controller">
+         <property name="text">
+          <string>Switch</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_36">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <item>
+        <widget class="QLabel" name="label_38">
+         <property name="text">
+          <string>Robot Program</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="resend_program">
+         <property name="text">
+          <string>Resend</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_37">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QLabel" name="label_34">
@@ -1423,14 +1532,14 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_2">
+          <widget class="QLineEdit" name="speed_slider">
            <property name="placeholderText">
             <string>0.0</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_13">
+          <widget class="QPushButton" name="set_speed_slider">
            <property name="text">
             <string>Set Speed Slider</string>
            </property>
