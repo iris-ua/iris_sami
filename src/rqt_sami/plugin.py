@@ -2,7 +2,7 @@
 import os, time
 from math import degrees
 import rospy, rospkg, rosparam
-from geometry_msgs.msg import Vector3
+from geometry_msgs.msg import Vector3, WrenchStamped
 from std_srvs.srv import Trigger
 from ur_msgs.srv import SetSpeedSliderFraction
 from controller_manager_msgs.srv import ListControllers, SwitchController
@@ -411,8 +411,7 @@ class VelocityControl(QObject):
         self.active = False
         self.velocity = 's'
 
-        self.lin_vel_publisher = rospy.Publisher('/linear_velocity', Vector3, queue_size=1)
-        self.ang_vel_publisher = rospy.Publisher('/angular_velocity', Vector3, queue_size=1)
+        self.wrench_vel_pub = rospy.Publisher('/wrench_velocity', WrenchStamped, queue_size=1)
         
 
     def activate(self, velocity):
@@ -431,14 +430,18 @@ class VelocityControl(QObject):
 
         while not rospy.is_shutdown():
             if self.active:
-                vel_msg = Vector3(*self.axis_to_vel[self.velocity])
+                wrench_vel_msg = WrenchStamped()
+                vel = Vector3(*self.axis_to_vel[self.velocity])
+                
                 if self.velocity[0] == 'l':
-                    self.lin_vel_publisher.publish(vel_msg)
+                    wrench_vel_msg.wrench.force = vel
                 elif self.velocity[0] == 'a':
-                    self.ang_vel_publisher.publish(vel_msg)
+                    wrench_vel_msg.wrench.torque = vel
                 else:
-                    self.lin_vel_publisher.publish(vel_msg)
-                    self.ang_vel_publisher.publish(vel_msg)
+                    wrench_vel_msg.wrench.force = vel
+                    wrench_vel_msg.wrench.torque = vel
+                
+                self.wrench_vel_pub.publish(wrench_vel_msg)
             
             rate.sleep()
 
