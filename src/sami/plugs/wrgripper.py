@@ -1,6 +1,10 @@
-#!/usr/bin/env python
-from httplib import CannotSendHeader, CannotSendRequest, ResponseNotReady
-import xmlrpclib
+#!/usr/bin/env python3
+
+#python2.7 from httplib import CannotSendHeader, CannotSendRequest, ResponseNotReady
+#python2.7 import xmlrpclib
+
+from http.client import CannotSendHeader, CannotSendRequest, ResponseNotReady
+from xmlrpc import client
 
 from sami.interface import GripperIF
 
@@ -9,10 +13,13 @@ class CR200Plug(GripperIF):
         super(GripperIF, self).__init__()
 
         connstr = "http://{}:{}/RPC2".format(options['host'], options['port'])
-        self.grpc = xmlrpclib.ServerProxy(connstr)
+        #python2.7 self.grpc = xmlrpclib.ServerProxy(connstr)
+        self.grpc = client.ServerProxy(connstr)
 
         self.gid = self.grpc.GetGrippers()[0]
-        self.state = self.grpc.GetState(self.gid)
+        # repo self.state = self.grpc.GetState(self.gid)
+        #self.state = self.grpc.GetState(self.gid, 0)   # HACK for solving idx error in reply (simulation : fake_gripper)
+        self.state = self.grpc.GetState(self.gid)      
         self.position = self.grpc.GetPos(self.gid)
 
         if options['host'] is not 'localhost':
