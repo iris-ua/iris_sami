@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import math
 import rospy
 
@@ -9,7 +8,7 @@ from sami.gripper import Gripper
 def main():
     rospy.init_node('motion_planner', anonymous=True)
 
-    arm = Arm('ur10e', group='manipulator')
+    arm = Arm('ur10e_moveit', group='manipulator', joint_positions_filename="positions.yaml")
     arm.velocity = 0.2
 
     # gripper = Gripper('cr200-85', host='10.1.0.2', port=44221)

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="gui" default="true" doc="Starts rqt plugin gui" />
+
+    <node pkg="iris_sami" type="server.py" name="server" output="screen" respawn="true"/>
+
+    <group if="$(arg gui)">
+        <node pkg="iris_sami" type="rqt_sami" name="rqt_sami" output="screen" respawn="true"/>
+    </group>
+
+</launch>

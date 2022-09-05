@@ -1,0 +1,43 @@
+<root>
+    <TreeNodesModel>
+        <SubTree ID="Grab"/>
+        <Action ID="Grip"/>
+        <Action ID="Joints">
+            <input_port type="float" name="elbow"/>
+            <input_port type="float" name="shoulder_lift"/>
+            <input_port type="float" name="shoulder_pan"/>
+            <input_port type="float" name="wrist_1"/>
+            <input_port type="float" name="wrist_2"/>
+            <input_port type="float" name="wrist_3"/>
+        </Action>
+        <Action ID="JointsAlias">
+            <input_port type="std:string" name="alias"/>
+        </Action>
+        <Action ID="Move">
+            <input_port type="float" name="pitch"/>
+            <input_port type="float" name="roll"/>
+            <input_port type="float" name="x"/>
+            <input_port type="float" name="y"/>
+            <input_port type="float" name="yaw"/>
+            <input_port type="float" name="z"/>
+        </Action>
+        <Action ID="Pause"/>
+        <Action ID="Pose">
+            <input_port type="float" name="pitch"/>
+            <input_port type="float" name="roll"/>
+            <input_port type="float" name="x"/>
+            <input_port type="float" name="y"/>
+            <input_port type="float" name="yaw"/>
+            <input_port type="float" name="z"/>
+        </Action>
+        <Action ID="Release"/>
+        <Action ID="Sleep">
+            <input_port type="float" name="seconds"/>
+        </Action>
+        <Condition ID="UR10eOnline"/>
+        <Action ID="Velocity">
+            <input_port type="float" name="velocity"/>
+        </Action>
+    </TreeNodesModel>
+</root>
+

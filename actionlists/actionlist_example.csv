@@ -1,0 +1,14 @@
+Repetitions,Command,Arguments
+1,jointGoal,init_calibration_pos
+3,rotate,[pi/9 0 0]
+1,jointGoal,init_calibration_pos
+3,rotate,[-pi/9 0 0],True
+1,jointGoal,init_calibration_pos
+3,rotate,[0 pi/9 0], True
+1,jointGoal,init_calibration_pos
+1,move,[0.035 0 0], True
+3,rotate,[0 0 pi/9], True
+1,jointGoal,init_calibration_pos
+1,move,[0.035 0 0], True
+3,rotate,[0 0 -pi/9], True
+1,jointGoal,init_calibration_pos

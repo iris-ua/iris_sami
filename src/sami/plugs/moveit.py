@@ -1,6 +1,5 @@
 
 import sys
-import copy
 
 import moveit_commander
 
@@ -25,6 +24,7 @@ class MoveItPlug(ArmIF):
         self.pframe = self.moveg.get_planning_frame()
         self.numj = len(self.moveg.get_joints())
 
+
     def move_joints(self, joints, velocity):
         if velocity is None:
             self.moveg.set_max_velocity_scaling_factor(self.velocity)
@@ -32,12 +32,15 @@ class MoveItPlug(ArmIF):
             self.moveg.set_max_velocity_scaling_factor(velocity)
 
         try:
-            self.moveg.go(joints, wait=True)
+            self.moveg.set_start_state(self.robot.get_current_state())
+            plan = self.moveg.plan(joints)
+            self.moveg.execute(plan)
             self.moveg.stop()
         except MoveItCommanderException as e:
             self.last_error_msg = str(e)
             return False
         return True
+
 
     def move_pose(self, pose, velocity):
         if velocity is None:
@@ -46,6 +49,7 @@ class MoveItPlug(ArmIF):
             self.moveg.set_max_velocity_scaling_factor(velocity)
 
         try:
+            self.moveg.set_start_state(self.robot.get_current_state())
             self.moveg.set_pose_target(pose)
             ok = self.moveg.go(wait=True)
             self.moveg.stop()
@@ -57,6 +61,7 @@ class MoveItPlug(ArmIF):
             self.last_error_msg = str(e)
             self.moveg.clear_pose_targets()
             return False
+
 
     def move_pose_relative(self, dpose, velocity):
         if velocity is None:
@@ -73,6 +78,7 @@ class MoveItPlug(ArmIF):
         pose = tr.translation_from_matrix(xform).tolist() + list(tr.euler_from_matrix(xform))
 
         wp = [list_to_pose(pose)]  # waypoints
+        self.moveg.set_start_state(self.robot.get_current_state())
         (plan, fraction) = self.moveg.compute_cartesian_path(wp, eef_step = 0.01, jump_threshold = 0.0)
         if fraction < 1.0:
             self.last_error_msg = "No motion plan found."
@@ -89,3 +95,41 @@ class MoveItPlug(ArmIF):
             return False
 
         return True
+    
+
+    def move_pose_relative_world(self, dpose, velocity):
+        if velocity is None:
+            self.moveg.set_max_velocity_scaling_factor(self.velocity)
+        else:
+            self.moveg.set_max_velocity_scaling_factor(velocity)
+
+        pose = pose_to_list(self.moveg.get_current_pose().pose)
+        pose = np.append(pose[0:3], tr.euler_from_quaternion(pose[3:]))
+        pose = np.add(pose, dpose)
+
+        wp = [list_to_pose(pose)]
+        self.moveg.set_start_state(self.robot.get_current_state())
+        (plan, fraction) = self.moveg.compute_cartesian_path(wp, eef_step = 0.01, jump_threshold = 0.0)
+        if fraction < 1.0:
+            self.last_error_msg = "No motion plan found."
+            return False
+
+        v = self.velocity if velocity is None else velocity
+        plan = self.moveg.retime_trajectory(self.robot.get_current_state(), plan, v)
+
+        try:
+            self.moveg.execute(plan, wait=True)
+            self.moveg.stop()
+        except MoveItCommanderException as e:
+            self.last_error_msg = str(e)
+            return False
+
+        return True
+
+    
+    def get_joints(self):
+        return self.moveg.get_current_joint_values()
+
+
+    def get_pose(self):
+        return self.moveg.get_current_pose().pose
