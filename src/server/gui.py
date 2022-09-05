@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import rospkg, rospy, rosparam, gi, sys, signal
 from math import radians, degrees
 from std_srvs.srv import Trigger

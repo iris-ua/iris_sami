@@ -34,7 +34,7 @@ class MoveItPlug(ArmIF):
         try:
             self.moveg.set_start_state(self.robot.get_current_state())
             plan = self.moveg.plan(joints)
-            self.moveg.execute(plan)
+            self.moveg.execute(plan[1])
             self.moveg.stop()
         except MoveItCommanderException as e:
             self.last_error_msg = str(e)

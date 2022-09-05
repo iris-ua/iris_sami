@@ -46,6 +46,7 @@ include_directories(${behaviortree_cpp_v3_INCLUDE_DIRS})
 include_directories(${catkin_INCLUDE_DIRS})
 
 add_executable(ur10e_tree src/bt/ur10e.cpp)
+message(STATUS "BEHAVTREE dir: ${behaviortree_cpp_v3_LIBRARIES}")
 target_link_libraries(ur10e_tree ${catkin_LIBRARIES} ${behaviortree_cpp_v3_LIBRARIES})
 
 add_dependencies(ur10e_tree iris_sami_generate_messages_cpp)
