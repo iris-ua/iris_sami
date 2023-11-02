@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import math
 import rospy
 
@@ -15,12 +15,12 @@ def main():
 
     x = -0.6
     y = -0.176
-    arm.move_pose(pose=[x, y, 0.6, 0, 0.5, math.pi + math.pi/6])
+    # arm.move_pose(pose=[x, y, 0.6, 0, 0.5, math.pi + math.pi/6])
     # arm.move_pose(pose=[x, y, 0.5, 0, math.pi*0.5, math.atan2(y,x)])
     # print math.atan2(y,x)
 
-    # arm.move_pose_relative(dpose=EzPose(yaw=math.pi*0.25), velocity=0.5)
-    # arm.move_pose_relative(dpose=EzPose(yaw=-math.pi*0.25), velocity=0.05)
+    arm.move_pose_relative(dpose=EzPose(yaw=math.pi*0.25), velocity=0.5)
+    arm.move_pose_relative(dpose=EzPose(yaw=-math.pi*0.25), velocity=0.05)
 
     # print gripper.grip()
     # print gripper.release()

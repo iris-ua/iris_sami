@@ -16,7 +16,7 @@ class JointPositionAliases():
             raise Exception
 
         self.error_msg = ""
-    
+
     def get_joint_configuration(self, position_name):
         try:
             return self.joint_positions[position_name]
@@ -33,7 +33,7 @@ class JointPositionAliases():
                 filename = rospkg.RosPack().get_path('iris_sami') + '/yaml/' + filename
                 data = rosparam.load_file(filename)
             except Exception as e:
-                self.error_msg = "Can't load positions from'" + filename + "'\n" + str(e)  
+                self.error_msg = "Can't load positions from'" + filename + "'\n" + str(e)
                 rospy.logerr(self.error_msg)
                 return False
 
@@ -88,7 +88,7 @@ class Arm(object):
         if not ok:
             rospy.logerr(self.error_msg)
         return ok
-    
+
     def move_pose_relative_world(self, dpose, velocity = None):
         """ Move the arm relative to the world base frame in a straight trajectory """
         ok = self.arm_interface.move_pose_relative_world(dpose, velocity)
@@ -102,28 +102,28 @@ class Arm(object):
         print('Start Move Chain')
 
         for i, motion in enumerate(chain.mchain):
-            if 'q' in motion['type']:
+            if 'q' == motion['type']:
                 rospy.loginfo("MoveJoints: {}".format(motion['goal']))
                 ret = self.move_joints(motion['goal'], motion['velocity'])
-            elif 'p' is motion['type']:
+            elif 'p' == motion['type']:
                 rospy.loginfo("MovePose: {}".format(motion['goal']))
                 ret = self.move_pose(motion['goal'], motion['velocity'])
-            elif 'r' is motion['type']:
+            elif 'r' == motion['type']:
                 rospy.loginfo("MovePoseRelative: {}".format(motion['goal']))
                 ret = self.move_pose_relative(motion['goal'], motion['velocity'])
-            elif 's' is motion['type']:
+            elif 's' == motion['type']:
                 rospy.loginfo("Sleeping: {} seconds".format(motion['goal']))
                 rospy.sleep(motion['goal'])
                 ret = True
-            elif 'a' in motion['type']:
+            elif 'a' == motion['type']:
                 rospy.loginfo('MoveJointsName: {}'.format(motion['goal']))
                 ret = self.move_joints_alias(motion['goal'])
-            elif 'f' in motion["type"]:
+            elif 'f' == motion["type"]:
                 rospy.loginfo('Executing custom function')
                 ret = motion['goal']()
 
             if ret == False:
-                if motion["type"] is not 'n':
+                if motion["type"] != 'n':
                     rospy.logerr(self.error_msg)
                 return i+1
 
@@ -169,7 +169,7 @@ class Arm(object):
 
     def get_joint_position_names(self):
         return self.joint_pos_aliases.joint_positions.keys()
-        
+
     @property
     def velocity(self):
         return self.arm_interface.velocity
